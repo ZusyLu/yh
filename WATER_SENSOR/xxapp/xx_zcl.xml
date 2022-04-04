@@ -1,0 +1,9 @@
+<configurator> 
+ 
+  <!-- Use the cluster extension Extend the on/off cluster -->
+  <clusterExtension code="0x0003">
+  	<attribute side="server" code="0xF000" define="XX_TIME_REPORT" type="INT8U" min="0x00" max="0xFF" writable="true" default="0x0a" optional="true">xx_time_reprot</attribute>
+    <attribute side="server" code="0xF001" define="XX_DEVICE_CIE_ADDRESS" type="IEEE_ADDRESS" min="0x0000000000000000" max="0xFFFFFFFFFFFFFFFF" writable="true" default="0xFFFFFFFFFFFFFFF3" optional="true" >xx_device_cie_address</attribute> 
+ 
+  </clusterExtension>
+</configurator>
