@@ -1,0 +1,9 @@
+app-custom-application/serial-rx-queue.o: G:\SiliconLabs\SimplicityStudio\v5_workspace\ZigbeeDebugger\app-custom-application\serial-rx-queue.c
+app-custom-application/serial-rx-queue.o: e:\iar\arm\inc\c\stdint.h
+app-custom-application/serial-rx-queue.o: e:\iar\arm\inc\c\ycheck.h
+app-custom-application/serial-rx-queue.o: e:\iar\arm\inc\c\yvals.h
+app-custom-application/serial-rx-queue.o: e:\iar\arm\inc\c\DLib_Defaults.h
+app-custom-application/serial-rx-queue.o: E:\iar\arm\inc\c\DLib_Config_Normal.h
+app-custom-application/serial-rx-queue.o: e:\iar\arm\inc\c\DLib_Product.h
+app-custom-application/serial-rx-queue.o: e:\iar\arm\inc\c\stdbool.h
+app-custom-application/serial-rx-queue.o: G:\SiliconLabs\SimplicityStudio\v5_workspace\ZigbeeDebugger\app-custom-application\serial-rx-queue.h
