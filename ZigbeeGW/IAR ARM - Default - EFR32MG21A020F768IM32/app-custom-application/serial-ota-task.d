@@ -1,0 +1,9 @@
+app-custom-application/serial-ota-task.o: G:\SiliconLabs\SimplicityStudio\v5_workspace\ZigbeeGW\app-custom-application\serial-ota-task.c
+app-custom-application/serial-ota-task.o: e:\iar\arm\inc\c\stdint.h
+app-custom-application/serial-ota-task.o: e:\iar\arm\inc\c\ycheck.h
+app-custom-application/serial-ota-task.o: e:\iar\arm\inc\c\yvals.h
+app-custom-application/serial-ota-task.o: e:\iar\arm\inc\c\DLib_Defaults.h
+app-custom-application/serial-ota-task.o: E:\iar\arm\inc\c\DLib_Config_Normal.h
+app-custom-application/serial-ota-task.o: e:\iar\arm\inc\c\DLib_Product.h
+app-custom-application/serial-ota-task.o: e:\iar\arm\inc\c\stdbool.h
+app-custom-application/serial-ota-task.o: G:\SiliconLabs\SimplicityStudio\v5_workspace\ZigbeeGW\app-custom-application\serial-ota-task.h

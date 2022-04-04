@@ -1,0 +1,669 @@
+#include PLATFORM_HEADER
+#include "app/framework/util/common.h"
+#include "app/framework/include/af.h"
+#include "gw-cfg-tokens.h"
+#include "serial-rx-task.h"
+#include "serial-rx-queue.h"
+#include "rf-tx-command.h"
+#include "serial-ota-task.h"
+/*------------------------------------------------
+ 此C文件的功能包含以下几个部分：
+1、网络配置协议部分功能实现
+2、网关HOST端串口数据的环形队列接收处理
+3、处理网关HOST端串口命令并通过RF发送对应的指令到设备端
+__________________________________________________*/
+
+#define  OWN_SERIAL_RX_TASK   //
+
+//#define  SERIAL_NACK
+
+#define  SERIAL_RX_TIMEOUT     20
+#define  SERIAL_BUFFER_LENGTH  80
+#define  RF_TX_TIMEOUT         100
+//define this macro for customer protocol
+#define  CUSTOM_PROTOCOL_TYPE
+// network configuration protocol define
+// 网络配置协议
+/*-----------------------------------------------
+|三字节协议标识符   |   一字节	 | N字节
+-------------------------------------------------
+|    A5 AA 55	 |    功能码	 | 参数
+-------------------------------------------------*/
+#define  PROTOCAL_SERIAL_PORT          1
+#define  PROTOCAL_BUFFER_MIN_LENGTH    4
+#define  PROTOCAL_CMD_INDEX            3
+#define  PROTOCAL_PAYLOAD_START_INDEX  4
+#define  PROTOCAL_FRAME_ID1          0xA5
+#define  PROTOCAL_FRAME_ID2          0xAA
+#define  PROTOCAL_FRAME_ID3          0x5A
+#define  PROTOCAL_CMD_NODE_TYPE      0x00
+#define  PROTOCAL_CMD_CHANNEL        0x01
+#define  PROTOCAL_CMD_POWER          0x02
+#define  PROTOCAL_CMD_SHORT_ADDR     0x03
+#define  PROTOCAL_CMD_PANID          0x04
+#define  PROTOCAL_CMD_EPANID         0x05
+#define  PROTOCAL_CMD_NWK_KEY        0x06
+#define  PROTOCAL_CMD_ALL_SET        0x07
+#define  PROTOCAL_CMD_REBOOT         0x11
+#define  PROTOCAL_CMD_GET_ADDR       0x21
+#define  PROTOCAL_CMD_READ_NETWORK   0x22
+#define  PROTOCAL_CMD_READ_DATA      0x31
+#define  PROTOCAL_CMD_WRITE_DATA     0x32
+
+typedef struct {
+   int8u length;
+   int8u buffer[SERIAL_BUFFER_LENGTH];
+} SerialRxDateStruct;
+typedef struct {
+   int8u frameid1;
+   int8u frameid2;
+   int8u frameid3;
+   int8u cmdCode;
+   int8u ackData[40];
+} SerialTxDateStruct;
+typedef struct{
+   int8u  deviceType;
+   int8u  channel;
+   int8u  radioTxPower;
+   int16u shortAddress;
+   int16u panId;
+   int8u  extendPanId[8];
+   int8u  nwkKey[16];
+}DeviceCfgInfoStruct;
+//
+SerialRxDateStruct  serialbuffer;
+SerialTxDateStruct  serialTxBuffer;
+DeviceCfgInfoStruct deviceCfgInfo;
+tokTypeModuleCfgStruct tokenModuleCfgInfo;
+tokTypeModuleUserDataStruct userData;
+//
+EmberEventControl appRebootEventControl;
+void halRebootEventHandler(void);
+void serialCommandParse(void);
+void customDefineProtocalProcess(void);
+//
+ProtocolDataStruct protocolRxBuffer; //
+ProtocolDataStruct protocolRingBuffer;
+uint16_t lastSerialRxTime = 0;
+//Function
+void appRebootEventHandler(void)
+{
+    emberEventControlSetInactive(appRebootEventControl);
+    halReboot(); //
+}
+//ACK Function
+void setStatusAck(uint8_t cmd,uint8_t status)
+{
+     serialTxBuffer.frameid1 = PROTOCAL_FRAME_ID1;
+     serialTxBuffer.frameid2 = PROTOCAL_FRAME_ID2;
+     serialTxBuffer.frameid3 = PROTOCAL_FRAME_ID3;
+     serialTxBuffer.cmdCode  = cmd;
+     serialTxBuffer.ackData[0] = status;
+     emberSerialWriteData(PROTOCAL_SERIAL_PORT,&serialTxBuffer.frameid1,5);
+     emberSerialWaitSend(PROTOCAL_SERIAL_PORT);
+}
+//获取网络参数地址参数
+void getAddressAck(void)
+{
+     EmberNodeId nodeId;
+     EmberEUI64 eui64;
+     serialTxBuffer.frameid1 = PROTOCAL_FRAME_ID1;
+     serialTxBuffer.frameid2 = PROTOCAL_FRAME_ID2;
+     serialTxBuffer.frameid3 = PROTOCAL_FRAME_ID3;
+     serialTxBuffer.cmdCode  = PROTOCAL_CMD_GET_ADDR;
+     nodeId = emberGetNodeId();
+     emberAfGetEui64(eui64);
+     serialTxBuffer.ackData[0] = (nodeId >> 8) & 0x00ff;
+     serialTxBuffer.ackData[1] = (nodeId & 0x00ff);
+     serialTxBuffer.ackData[2] = eui64[7];
+     serialTxBuffer.ackData[3] = eui64[6];
+     serialTxBuffer.ackData[4] = eui64[5];
+     serialTxBuffer.ackData[5] = eui64[4];
+     serialTxBuffer.ackData[6] = eui64[3];
+     serialTxBuffer.ackData[7] = eui64[2];
+     serialTxBuffer.ackData[8] = eui64[1];
+     serialTxBuffer.ackData[9] = eui64[0];
+     emberSerialWriteData(PROTOCAL_SERIAL_PORT,&serialTxBuffer.frameid1,14);
+     emberSerialWaitSend(PROTOCAL_SERIAL_PORT);
+}
+//获取网络参数：0x22
+void readNetworkInfoAck(void)
+{
+     serialTxBuffer.frameid1 = PROTOCAL_FRAME_ID1;
+     serialTxBuffer.frameid2 = PROTOCAL_FRAME_ID2;
+     serialTxBuffer.frameid3 = PROTOCAL_FRAME_ID3;
+     serialTxBuffer.cmdCode  = PROTOCAL_CMD_READ_NETWORK;
+     halCommonGetToken(&tokenModuleCfgInfo.deviceType,TOKEN_MODULE_CFG_INFO);
+     MEMMOVE(&serialTxBuffer.ackData[0],&tokenModuleCfgInfo.deviceType,3);
+     //Addr and panid
+     serialTxBuffer.ackData[3] = (tokenModuleCfgInfo.shortAddress >> 8) & 0x00ff;
+     serialTxBuffer.ackData[4] = (tokenModuleCfgInfo.shortAddress & 0x00ff);
+     serialTxBuffer.ackData[5] = (tokenModuleCfgInfo.panId >> 8) & 0x00ff;
+     serialTxBuffer.ackData[6] = (tokenModuleCfgInfo.panId & 0x00ff);
+     MEMMOVE(&serialTxBuffer.ackData[7],&tokenModuleCfgInfo.extendPanId,8);
+     MEMMOVE(&serialTxBuffer.ackData[15],&tokenModuleCfgInfo.nwkKey,16);
+     emberSerialWriteData(PROTOCAL_SERIAL_PORT,&serialTxBuffer.frameid1,35);
+     emberSerialWaitSend(PROTOCAL_SERIAL_PORT);
+}
+//获取存储区数据
+void readUserDataAck(void)
+{
+     serialTxBuffer.frameid1 = PROTOCAL_FRAME_ID1;
+     serialTxBuffer.frameid2 = PROTOCAL_FRAME_ID2;
+     serialTxBuffer.frameid3 = PROTOCAL_FRAME_ID3;
+     serialTxBuffer.cmdCode  = PROTOCAL_CMD_READ_DATA;
+     halCommonGetToken(&userData,TOKEN_MODULE_USER_DATA);
+     MEMMOVE(serialTxBuffer.ackData,userData.usData, 16);
+     emberSerialWriteData(PROTOCAL_SERIAL_PORT,&serialTxBuffer.frameid1,20);
+     emberSerialWaitSend(PROTOCAL_SERIAL_PORT);
+}
+//清除串口缓冲区
+
+void clearSerialBuffer(void)
+{
+     serialbuffer.length = 0;
+     serialbuffer.buffer[0] = 0xff;
+     serialbuffer.buffer[1] = 0xff;
+     serialbuffer.buffer[2] = 0xff;
+}
+//串口接收数据处理
+void serialRxProcess(uint8_t Port)
+{
+      static int16u lastTime = 0;
+      int16u time;
+      int8u ch = 0;
+      time = halCommonGetInt16uMillisecondTick();
+      if (elapsedTimeInt16u(lastTime, time) > SERIAL_RX_TIMEOUT)
+      {
+           lastTime = time;
+           serialCommandParse();
+
+      }
+      else if(emberSerialReadByte(Port, &ch) == EMBER_SUCCESS)
+      {
+           lastTime = time;
+           serialbuffer.buffer[serialbuffer.length] = ch;
+           serialbuffer.length ++;
+      }
+
+}
+//串口网络配置协议的接收处理
+void serialCommandParse(void)
+{
+      uint8_t  payloadLength;
+      if(serialbuffer.length < PROTOCAL_BUFFER_MIN_LENGTH)
+      {
+         serialbuffer.length = 0;
+         serialbuffer.buffer[0] = 0xff;
+         serialbuffer.buffer[1] = 0xff;
+         serialbuffer.buffer[2] = 0xff;
+         return;
+      }
+      else if((serialbuffer.buffer[0] == PROTOCAL_FRAME_ID1)
+              &&(serialbuffer.buffer[1] == PROTOCAL_FRAME_ID2)
+              &&(serialbuffer.buffer[2] == PROTOCAL_FRAME_ID3))
+      {
+          payloadLength = serialbuffer.length - PROTOCAL_BUFFER_MIN_LENGTH;
+          switch(serialbuffer.buffer[PROTOCAL_CMD_INDEX])
+          {
+
+               case  PROTOCAL_CMD_NODE_TYPE:
+                     if(payloadLength == 1)
+                     {
+                        tokenModuleCfgInfo.deviceType = serialbuffer.buffer[PROTOCAL_PAYLOAD_START_INDEX];
+                        setStatusAck(PROTOCAL_CMD_NODE_TYPE,0x00);
+                     }
+                     else
+                     {
+                         setStatusAck(PROTOCAL_CMD_NODE_TYPE,0x01);
+                     }
+                     break;
+               case  PROTOCAL_CMD_CHANNEL :
+                     if(payloadLength == 1)
+                     {
+                         tokenModuleCfgInfo.channel = serialbuffer.buffer[PROTOCAL_PAYLOAD_START_INDEX];
+                         setStatusAck(PROTOCAL_CMD_CHANNEL,0x00) ;
+                     }
+                     else
+                     {
+                         setStatusAck(PROTOCAL_CMD_CHANNEL,0x01) ;
+                     }
+                    break;
+               case  PROTOCAL_CMD_POWER:
+                     if(payloadLength == 1)
+                     {
+                        if(serialbuffer.buffer[PROTOCAL_PAYLOAD_START_INDEX] >= 0x14)
+                        {
+                           setStatusAck(PROTOCAL_CMD_POWER,0x01);
+                        }
+                        else
+                        {
+                           tokenModuleCfgInfo.radioTxPower = serialbuffer.buffer[PROTOCAL_PAYLOAD_START_INDEX];
+                           setStatusAck(PROTOCAL_CMD_POWER,0x00);
+                        }
+                     }
+                     else
+                     {
+                        setStatusAck(PROTOCAL_CMD_POWER,0x01);
+                     }
+                    break;
+               case  PROTOCAL_CMD_SHORT_ADDR:
+                     if(payloadLength == 2)
+                     {
+                        tokenModuleCfgInfo.shortAddress = (serialbuffer.buffer[PROTOCAL_PAYLOAD_START_INDEX] << 8)
+                          + serialbuffer.buffer[PROTOCAL_PAYLOAD_START_INDEX + 1];
+                        setStatusAck(PROTOCAL_CMD_SHORT_ADDR,0x00);
+
+                     }
+                     else
+                     {
+                         setStatusAck(PROTOCAL_CMD_SHORT_ADDR,0x01);
+                     }
+                    break;
+               case  PROTOCAL_CMD_PANID :
+                    if(payloadLength == 2)
+                     {
+                        tokenModuleCfgInfo.panId = (serialbuffer.buffer[PROTOCAL_PAYLOAD_START_INDEX] << 8)
+                          + serialbuffer.buffer[PROTOCAL_PAYLOAD_START_INDEX + 1];
+                         setStatusAck(PROTOCAL_CMD_PANID,0x00);
+                     }
+                     else
+                     {
+                          setStatusAck(PROTOCAL_CMD_PANID,0x01);
+                     }
+                    break;
+               case  PROTOCAL_CMD_EPANID:
+                     if(payloadLength == 8)
+                     {
+                         MEMMOVE(tokenModuleCfgInfo.extendPanId,
+                                &serialbuffer.buffer[PROTOCAL_PAYLOAD_START_INDEX], 8);
+                          setStatusAck(PROTOCAL_CMD_EPANID,0x00);
+
+                     }
+                     else
+                     {
+                          setStatusAck(PROTOCAL_CMD_EPANID,0x01);
+                     }
+                    break;
+               case  PROTOCAL_CMD_NWK_KEY :
+                     if(payloadLength == 16)
+                     {
+                         MEMMOVE(tokenModuleCfgInfo.nwkKey,
+                                &serialbuffer.buffer[PROTOCAL_PAYLOAD_START_INDEX], 16);
+                          setStatusAck(PROTOCAL_CMD_NWK_KEY,0x00);
+
+                     }
+                     else
+                     {
+                           setStatusAck(PROTOCAL_CMD_NWK_KEY,0x01);
+                     }
+                    break;
+               case  PROTOCAL_CMD_ALL_SET:
+                      if(payloadLength == 31)
+                     {
+                        MEMMOVE(&tokenModuleCfgInfo.deviceType,
+                                &serialbuffer.buffer[PROTOCAL_PAYLOAD_START_INDEX], 31);
+                        tokenModuleCfgInfo.shortAddress = (serialbuffer.buffer[PROTOCAL_PAYLOAD_START_INDEX+3] << 8)
+                          + serialbuffer.buffer[PROTOCAL_PAYLOAD_START_INDEX+4];
+                        tokenModuleCfgInfo.panId =(serialbuffer.buffer[PROTOCAL_PAYLOAD_START_INDEX+5] << 8)
+                          + serialbuffer.buffer[PROTOCAL_PAYLOAD_START_INDEX+6];
+                         setStatusAck(PROTOCAL_CMD_ALL_SET,0x00);
+
+                     }
+                     else
+                     {
+                          setStatusAck(PROTOCAL_CMD_ALL_SET,0x01);
+                     }
+                    break;
+               case PROTOCAL_CMD_REBOOT :
+                    if(payloadLength == 0)
+                    {
+                       halCommonSetToken(TOKEN_MODULE_CFG_INFO,&tokenModuleCfgInfo);
+                       emberEventControlSetDelayMS(appRebootEventControl,500);
+                       setStatusAck(PROTOCAL_CMD_REBOOT,0x00);
+                    }
+                    else
+                    {
+                       setStatusAck(PROTOCAL_CMD_REBOOT,0x01);
+                    }
+                     break;
+               case  PROTOCAL_CMD_GET_ADDR :
+                     if(payloadLength == 0)
+                     {
+                        getAddressAck();
+                     }
+                     else
+                     {
+                         setStatusAck(PROTOCAL_CMD_GET_ADDR,0x01); //readUserDataAck
+                     }
+                      break;
+               case PROTOCAL_CMD_READ_NETWORK :
+                     if(payloadLength == 0)
+                     {
+                        readNetworkInfoAck();
+                     }
+                     else
+                     {
+                         setStatusAck(PROTOCAL_CMD_READ_NETWORK,0x01);
+                     }
+                     break;
+               case  PROTOCAL_CMD_READ_DATA :
+                    if(payloadLength == 0)
+                     {
+                        readUserDataAck();
+                     }
+                     else
+                     {
+                         setStatusAck(PROTOCAL_CMD_READ_DATA,0x01);
+                     }
+                     break;
+               case  PROTOCAL_CMD_WRITE_DATA :
+                     if(payloadLength == 16)
+                     {
+                         setStatusAck(PROTOCAL_CMD_WRITE_DATA,0x00);
+                         MEMMOVE(&userData.usData[0],
+                                &serialbuffer.buffer[PROTOCAL_PAYLOAD_START_INDEX], 16);
+                         halCommonSetToken(TOKEN_MODULE_USER_DATA,&userData);
+
+                     }
+                     else
+                     {
+                         setStatusAck(PROTOCAL_CMD_WRITE_DATA,0x01);
+                     }
+                     break;
+               default:
+                     break;
+           }
+      }
+      else
+      {
+          customDefineProtocalProcess();
+      }
+      serialbuffer.length = 0;
+      serialbuffer.buffer[0] = 0xff;
+      serialbuffer.buffer[1] = 0xff;
+      serialbuffer.buffer[2] = 0xff;
+}
+//从配置Token参数中初始化网络
+void modeInitialFromToken(void)
+{
+      bool reboot_flag = false;
+      tokTypeStackNodeData tokenNodeData;
+      tokTypeStackKeys tokenKeys;
+//     tokTypeStackParentInfo tokenParentInfo; //j
+//     uint8_t tokenParentEuiDeafult[8] = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
+      EmAfZigbeeProNetwork tokenZigbeeProNetwork;
+      //get token value and compare  the current network parameter
+      halCommonGetToken(&tokenModuleCfgInfo,TOKEN_MODULE_CFG_INFO) ;
+      //only coordinator type
+      if((tokenModuleCfgInfo.deviceType != EMBER_COORDINATOR)
+         ||(tokenModuleCfgInfo.shortAddress != 0x0000))
+      {
+          tokenModuleCfgInfo.shortAddress = 0x0000;
+          tokenModuleCfgInfo.deviceType = EMBER_COORDINATOR;
+
+      }
+      tokenZigbeeProNetwork.nodeType = tokenModuleCfgInfo.deviceType;
+      tokenZigbeeProNetwork.securityProfile = EMBER_AF_SECURITY_PROFILE_Z3;
+      for (uint8_t i = 0; i < 2; i++) //double check solve the product test power on connect unstable
+      {
+           halCommonGetToken(&tokenNodeData, TOKEN_STACK_NODE_DATA);
+          if ((tokenNodeData.nodeType == 0) || (tokenNodeData.radioFreqChannel != tokenModuleCfgInfo.channel) ||
+              (tokenNodeData.panId != tokenModuleCfgInfo.panId) ||
+              (tokenNodeData.zigbeeNodeId != tokenModuleCfgInfo.shortAddress) ||
+              (MEMCOMPARE(tokenNodeData.extendedPanId,tokenModuleCfgInfo.extendPanId, 8) != 0))
+          {
+             tokenNodeData.panId = tokenModuleCfgInfo.panId;
+             tokenNodeData.radioTxPower = tokenModuleCfgInfo.radioTxPower;
+             emberAfPluginNetworkSteeringGetPowerForRadioChannelCallback(tokenModuleCfgInfo.channel);
+             tokenNodeData.radioFreqChannel = tokenModuleCfgInfo.channel;
+             tokenNodeData.stackProfile = EMBER_STACK_PROFILE;
+             tokenNodeData.nodeType = tokenZigbeeProNetwork.nodeType;
+             tokenNodeData.zigbeeNodeId = tokenModuleCfgInfo.shortAddress;
+             MEMMOVE(tokenNodeData.extendedPanId, tokenModuleCfgInfo.extendPanId, 8);
+             halCommonSetToken(TOKEN_STACK_NODE_DATA,&tokenNodeData);
+             reboot_flag = true;
+          }
+          halCommonGetToken(&tokenKeys, TOKEN_STACK_KEYS);
+          if ((tokenKeys.activeKeySeqNum != 0x01) ||
+               (MEMCOMPARE(tokenKeys.networkKey,tokenModuleCfgInfo.nwkKey, 16) != 0))
+          {
+             tokenKeys.activeKeySeqNum = 0x01;
+             MEMMOVE(tokenKeys.networkKey, tokenModuleCfgInfo.nwkKey, 16);
+             halCommonSetToken(TOKEN_STACK_KEYS,&tokenKeys);
+             reboot_flag = true;
+          }
+          //halCommonGetToken(&tokenParentInfo, TOKEN_STACK_PARENT_INFO);
+          //if ((tokenParentInfo.parentNodeId != 0xFFFF) ||
+          //    (MEMCOMPARE(tokenParentInfo.parentEui, tokenParentEuiDeafult, 8) != 0))
+          //{
+          //   tokenParentInfo.parentNodeId = 0xFFFF;
+          //   MEMMOVE(tokenParentInfo.parentEui, tokenParentEuiDeafult, 8);
+          //   halCommonSetToken(TOKEN_STACK_PARENT_INFO,&tokenParentInfo);
+          //   reboot_flag = true;
+          //}
+       }
+       if (reboot_flag == true)
+       {
+          halReboot(); //jin rootboot for intial the stack
+       }
+}
+
+/*---------------------------protocal format define-----------------------------
+// host and zb gateway protocol define
+// 功能协议
+HEAD	   LEN	      CMD0	CMD1	  DATA	   FCS
+1 Byte	  1 Byte	      1 Byte	1 Byte		   1 Byte
+帧头,7C	  数据长度     预留	命令字	  数据段    校验
+
+--------------------------------------------------------------------------------*/
+//校验和计算
+uint8_t checkSum(uint8_t *data,uint8_t length)
+{
+       uint8_t i,checkSum = 0;
+
+       for(i = 0;i < length;i++)
+        checkSum += *(data+i);
+       return checkSum;
+}
+//zigbee--->host mcu ACK
+void serialSendAck(uint8_t cmd,uint8_t ackCode)
+{
+    //ackCode = 00 success  0x01 fail
+#ifndef SERIAL_NACK
+     uint8_t buffer[7];
+     buffer[0] = FRAME_HEADER; //protocolDataBuffer.header = FRAME_HEADER;
+     buffer[1] = 0x02;// protocolDataBuffer.length = 0x02;
+     buffer[2] = 0x01;//protocolDataBuffer.cmd0 = 0x01;
+     buffer[3] = GW_ZIGBEE_ACK;//protocolDataBuffer.cmd1 = GW_ZIGBEE_ACK;
+     buffer[4] = cmd;//protocolDataBuffer.data[0] = cmd;
+     buffer[5] = ackCode;//protocolDataBuffer.data[1] =  ackCode;
+     buffer[6] = checkSum(buffer,6);//protocolDataBuffer.fcs
+     //
+     emberSerialWriteData(PROTOCAL_SERIAL_PORT,buffer,7);
+     emberSerialWaitSend(PROTOCAL_SERIAL_PORT);
+#endif
+}
+//zigbee--->host mcu 启动或者完成OTA请求
+void serialSendImageRequest(uint8_t ctrlStatus)
+{
+    //ctrlStatus = 00 stop  0x01 start
+     uint8_t buffer[12];
+     buffer[0] = FRAME_HEADER; //protocolDataBuffer.header = FRAME_HEADER;
+     buffer[1] = 0x07;// protocolDataBuffer.length = 0x07;
+     buffer[2] = 0x01;//protocolDataBuffer.cmd0 = 0x01;
+     buffer[3] = GW_IMAGE_REQUEST;//protocolDataBuffer.cmd1 = GW_IMAGE_REQUEST;
+     buffer[4] = ctrlStatus;//protocolDataBuffer.data[0] = ctrlStatus;
+     buffer[5] = validImageType[0];//protocolDataBuffer.data[1] =  image type;
+     buffer[6] = validImageType[1];//protocolDataBuffer.data[2] =  image type;
+     buffer[7] = imageVersion[0];//protocolDataBuffer.data[3] = image version;
+     buffer[8] = imageVersion[1];//protocolDataBuffer.data[4] = image version;
+     buffer[9] = imageVersion[2];//protocolDataBuffer.data[5] = image version;
+     buffer[10] = imageVersion[3];//protocolDataBuffer.data[6] = image version;
+     buffer[11] = checkSum(buffer,11);//protocolDataBuffer.fcs
+     //
+     emberSerialWriteData(PROTOCAL_SERIAL_PORT,buffer,12);
+     emberSerialWaitSend(PROTOCAL_SERIAL_PORT);
+}
+//zigbee--->host mcu 请求一帧OTA数据
+void serialSendImagePacketRequest(uint32_t offset,uint8_t length)
+{
+    //ctrlStatus = 00 stop  0x01 start
+     uint8_t buffer[10];
+     buffer[0] = FRAME_HEADER; //protocolDataBuffer.header = FRAME_HEADER;
+     buffer[1] = 0x05;// protocolDataBuffer.length = 0x05;
+     buffer[2] = 0x01;//protocolDataBuffer.cmd0 = 0x01;
+     buffer[3] = GW_IMAGE_PACKET_REQUEST;//protocolDataBuffer.cmd1 = GW_IMAGE_REQUEST;
+     buffer[4] = offset & 0x000000ff;//protocolDataBuffer.data[0] = offset;
+     buffer[5] = (offset >>8 & 0x000000ff);//protocolDataBuffer.data[1] =  image type;
+     buffer[6] = (offset >>16 & 0x000000ff);//protocolDataBuffer.data[2] =  image type;
+     buffer[7] = (offset >> 24 & 0x000000ff);//protocolDataBuffer.data[3] = image version;
+     buffer[8] = length;//protocolDataBuffer.data[4] = image version;
+     buffer[9] = checkSum(buffer,9);//protocolDataBuffer.fcs
+     //
+     emberSerialWriteData(PROTOCAL_SERIAL_PORT,buffer,10);
+     emberSerialWaitSend(PROTOCAL_SERIAL_PORT);
+}
+// 口接收功能协议串的处理
+// 需要发送RF命令的命令帧会直接放入环形队列中缓存
+void customDefineProtocalProcess(void)
+{
+    //length
+    if((serialbuffer.length < FULL_BUFFER_MIN_LENGTH)
+       ||(serialbuffer.length != serialbuffer.buffer[1] + FULL_BUFFER_MIN_LENGTH)
+       ||(serialbuffer.buffer[0] != FRAME_HEADER))
+    {
+
+       return;
+    }
+    else if(checkSum(&serialbuffer.buffer[0],serialbuffer.length-1)
+             != serialbuffer.buffer[serialbuffer.length-1] )
+    {
+       serialSendAck(serialbuffer.buffer[3],0x01);
+    }
+     else
+    {
+        MEMMOVE(&protocolRxBuffer.header,&serialbuffer.buffer[0],serialbuffer.length);
+        switch(protocolRxBuffer.cmd1)
+        {
+             case  GW_QUERY_CONTROL_POINT_VALE:
+                   if(protocolRxBuffer.length != 0x0c)
+                   {
+                       serialSendAck(serialbuffer.buffer[3],0x01);
+                   }
+                   else
+                   {
+                       serialSendAck(serialbuffer.buffer[3],0x00);
+                       pushBufferToRing(&serialbuffer.buffer[0],serialbuffer.length);
+                   }
+                   break;
+             case  GW_CONTROL_CONTROL_POINT:
+                   if(protocolRxBuffer.length != 0x0d)
+                   {
+                       serialSendAck(serialbuffer.buffer[3],0x01);
+                   }
+                   else
+                   {
+                       serialSendAck(serialbuffer.buffer[3],0x00);
+                       pushBufferToRing(&serialbuffer.buffer[0],serialbuffer.length);
+                   }
+                   break;
+             case  GW_UPDATE_PANNEL:
+                   if(protocolRxBuffer.length != 0x0d)
+                   {
+                       serialSendAck(serialbuffer.buffer[3],0x01);
+                   }
+                   else
+                   {
+                       serialSendAck(serialbuffer.buffer[3],0x00);
+                       pushBufferToRing(&serialbuffer.buffer[0],serialbuffer.length);
+                   }
+                   break;
+             case  GW_UPDATE_PANNEL_SCENE:
+                   if(protocolRxBuffer.length != 0x0b)
+                   {
+                       serialSendAck(serialbuffer.buffer[3],0x01);
+                   }
+                   else
+                   {
+                       serialSendAck(serialbuffer.buffer[3],0x00);
+                       pushBufferToRing(&serialbuffer.buffer[0],serialbuffer.length);
+                   }
+                    break;
+             case  GW_IMAGE_NOTIFY:
+                    //here get the image type and version
+                    //date[0] start buffer[4]
+                    break;
+             case  GW_IMAGE_TX:
+                    //here get the image packet
+                    //date[0] start buffer[4]
+                    break;
+             case  GW_ZIGBEE_REBOOT:
+                   emberEventControlSetDelayMS(appRebootEventControl,50);
+                   break;
+             case  GW_MCU_ACK:
+                   break;
+             case  GW_DIRECT_TX:
+                   if(protocolRxBuffer.length <= 0x0A)
+                   {
+                       serialSendAck(serialbuffer.buffer[3],0x01);
+                   }
+                   else
+                   {
+                       serialSendAck(serialbuffer.buffer[3],0x00);
+                       pushBufferToRing(&serialbuffer.buffer[0],serialbuffer.length);
+                   }
+                   break;
+             default:
+                   break;
+        }
+    }
+
+}
+//间隔100ms从串口接收的环形队列中提取数据
+//并发送相应的RF命令到设备端
+void popRingBufferOneFrame(void)
+{
+
+    int16u time;
+    time = halCommonGetInt16uMillisecondTick();
+    if (elapsedTimeInt16u(lastSerialRxTime, time) > RF_TX_TIMEOUT)
+    {
+        lastSerialRxTime = time;
+        if(readRingBuffer(&protocolRingBuffer.header))
+        {
+           if(readRingBuffer(&protocolRingBuffer.length))
+           {
+              readRingBuffer(&protocolRingBuffer.cmd0);
+              readRingBuffer(&protocolRingBuffer.cmd1);
+              popRingBufferData(&protocolRingBuffer.data[0],protocolRingBuffer.length + 1);//+1 is fcs
+              //for test print output one frame
+              //emberSerialWriteData(PROTOCAL_SERIAL_PORT,
+              //                     &protocolRingBuffer.header,
+              //                     protocolRingBuffer.length + 5);//5 == header length cmd0 cmd1 fcs
+              //emberSerialWaitSend(PROTOCAL_SERIAL_PORT);
+              //
+              switch(protocolRingBuffer.cmd1)
+              {
+                 case  GW_QUERY_CONTROL_POINT_VALE:
+                       rfSendCommandQueryControlPointValue();
+                       break;
+                 case  GW_CONTROL_CONTROL_POINT:
+                       rfSendCommandCtrlControlPoint();
+                       break;
+                 case  GW_UPDATE_PANNEL:
+                       rfSendCommandUpdatePannel();
+                       break;
+                 case  GW_UPDATE_PANNEL_SCENE:
+                       rfSendCommandUpdatePannelScene();
+                       break;
+                 case  GW_DIRECT_TX:
+                       rfSendCommandDirectTx();
+                       break;
+                 default:
+                       break;
+              }
+           }
+        }
+    }
+}
