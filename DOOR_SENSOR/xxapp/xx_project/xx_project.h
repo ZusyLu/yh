@@ -83,7 +83,7 @@ extern "C"
 #define XX_PROJECT_TIME_MS(N)                                                       (N)
 
 
-#define XX_PROJECT_BUTTON_INTERVAL_TIME                                            1500
+#define XX_PROJECT_BUTTON_INTERVAL_TIME                                            (15*1000)
 #define XX_PROJECT_FACTORY_MIN_TIME                                                3200
 #define XX_PROJECT_FACTORY_MAX_TIME                                                8000
 #define XX_PROJECT_TRIGGER_TIME_OUT                                                (5*1000)
@@ -119,17 +119,17 @@ extern "C"
 
 #define XX_PROJECT_LOW_POWERMV                                                     2000
 
-#define XX_PROJECT_GW_NODE_ID                                                     0X0000
+#define XX_PROJECT_GW_NODE_ID                                                      0X0000
 
-#define XX_POWER_ON_READ_ADC_TIME_MS                                                        500
+#define XX_POWER_ON_READ_ADC_TIME_MS                                               500
 #define XX_PROJECT_SHROT_POLL_TIME                                                (10*1000)
 #define XX_PROJECT_WAIT_CFG_POLL_CUNT                                             60
 
-#define XX_PROJECT_ENDPIONT                                                              1
+#define XX_PROJECT_ENDPIONT                                                        1
 
-#define XX_PROJECT_READ_MODE                                                             1
-#define XX_PROJECT_WRITE_MODE                                                           2
-#define XX_PROJECT_READ_WRITE_ERROR                                                      0xff
+#define XX_PROJECT_READ_MODE                                                       1
+#define XX_PROJECT_WRITE_MODE                                                      2
+#define XX_PROJECT_READ_WRITE_ERROR                                                0xff
 
 
 
@@ -172,7 +172,7 @@ extern bool Xx_whether_ota;
 extern uint8_t Xx_project_press_falt;
 extern uint8_t Xx_project_released_falt;
 extern uint8_t Xx_project_poll_cunt;
-
+extern uint8_t Xx_key_for_leave_cunt;
 /***************************************************************************************************
 *                                             FUNCTION
 *                                             全局函数
