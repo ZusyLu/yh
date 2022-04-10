@@ -367,8 +367,18 @@ void xxIrqButtonHandleButton1PressingCallback( void )
 
 void xxIrqButtonHandleButton1PressedLongCallback( uint16_t timePressedMs, bool pressedAtReset )
 {
-    xxIrqButtonHandlePrintln("xx button leave ");
-    XxLeaveNetworkFuction();
+	if ( Xx_key_for_leave_cunt == 2 ) //leave cunt is 3
+	{
+		xxIrqButtonHandlePrintln("xx button leave ");
+		XxLeaveNetworkFuction();
+	}
+	else
+	{
+		xxIrqButtonHandlePrintln("xx button not leave ");
+	}
+	
+	emberEventControlSetInactive(xx_project_button_interval_time_event);
+	Xx_key_for_leave_cunt = 0;
     xxIrqButtonHandlePrintln("%s %d %s\n",__FILE__,__LINE__,__func__);
 }
 
@@ -377,6 +387,18 @@ void xxIrqButtonHandleButton1PressedShortCallback( uint16_t timePressedMs )
 {
     xxIrqButtonHandlePrintln("%s %d %s\n",__FILE__,__LINE__,__func__);
     EmberNetworkStatus state;
+	
+	Xx_key_for_leave_cunt++;// cunt key press leave
+	emberEventControlSetInactive(xx_project_button_interval_time_event);
+	if ( Xx_key_for_leave_cunt != 2 )
+	{
+		emberEventControlSetDelayMS(xx_project_button_interval_time_event, (XX_PROJECT_BUTTON_INTERVAL_TIME/5) );
+	}
+	else
+	{
+		emberEventControlSetDelayMS(xx_project_button_interval_time_event, XX_PROJECT_BUTTON_INTERVAL_TIME);
+	}
+
     state = emberAfNetworkState();
     if ( state == EMBER_NO_NETWORK )
     {

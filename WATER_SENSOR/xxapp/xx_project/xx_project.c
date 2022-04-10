@@ -61,7 +61,7 @@ EmberEventControl xx_project_scan_network_event;
 EmberEventControl xx_project_button_interval_time_event;
 EmberEventControl xx_project_wait_cfg_cmd_event;
 
-
+uint8_t Xx_key_for_leave_cunt = 0;
 uint8_t Xx_project_scan_network_cunt = 0;
 uint8_t Xx_project_will_leave_flat = 0;
 uint8_t Xx_project_key_for_config_flat = 0;// no use
@@ -235,7 +235,7 @@ void xxProjectScanNetworkFuction( void )
             case EMBER_JOINING_NETWORK:
                 {
                     xxJoiningCunt++;
-                    if ( xxJoiningCunt >= (XX_PROJECT_SCAN_NETWORK_MAX_NUMBER-1) )
+                    if ( xxJoiningCunt >= (XX_PROJECT_SCAN_NETWORK_MAX_NUMBER/2) )
                     {
                         //reboot
                         halReboot();
@@ -322,6 +322,7 @@ void xxProjectButtonIntervalTimeFuction( void )
     emberEventControlSetInactive( xx_project_button_interval_time_event );
     Xx_project_press_falt = true;
     Xx_project_released_falt = true;
+	Xx_key_for_leave_cunt = 0;//clear
 }
 
 void xxProjectWaitCfgCmdFuction( void )
@@ -446,6 +447,7 @@ void xxRebootEventHandler( void )
 {
     EmberNetworkStatus state;
     state = emberAfNetworkState();
+	Xx_key_for_leave_cunt = 0;
     emberEventControlSetInactive( xxRebootEventControl );
     //xxIasMotionSendorWriteMacAddr();
     xxIasMotionSendorWriteAndReadVersion();
@@ -467,6 +469,9 @@ void xxRebootEventHandler( void )
     //reset cunt
     XxDiagnosticsGetResetCunt();
     XxIasZoneResetUpdateTamperPinFunction();
+
+	xxIasMotionSensorPrintln("xx this is water sensor v1.0.1");
+	
 }
 
 //rw :read is 1; write is 2

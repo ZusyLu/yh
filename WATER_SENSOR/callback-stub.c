@@ -1535,24 +1535,6 @@ void emberAfPluginCountersRolloverCallback(EmberCounterType type)
 {
 }
 
-/** @brief Lost Parent Connectivity
- *
- * This function is called by the End Device Support plugin when the end device
- * cannot connect to its parent. This callback is called under the following
- * instances:
- * - When the network state of the device is EMBER_JOINED_NETWORK_NO_PARENT.
- * - If there are 3 or more data poll transaction failures for an end device.
- *
- * If this callback returns false, the End Device Support plugin code will
- * proceed with issuing a Trust Center rejoin. Otherwise, if this function
- * returns true, the End Device Support plugin will not issue a Trust Center
- * rejoin.
- */
-bool emberAfPluginEndDeviceSupportLostParentConnectivityCallback(void)
-{
-  return false;
-}
-
 /** @brief Pre Network Move
  *
  * This function is called by the End Device Support plugin just before it

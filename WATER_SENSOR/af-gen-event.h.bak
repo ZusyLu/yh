@@ -17,6 +17,7 @@
   extern EmberEventControl emberAfPluginReportingTickEventControl; \
   extern EmberEventControl emberAfPluginUpdateTcLinkKeyBeginTcLinkKeyUpdateEventControl; \
   extern EmberEventControl xxBlnkLed0Event; \
+  extern EmberEventControl xxBlnkLed1Event; \
   extern EmberEventControl xxInitEvent; \
   extern EmberEventControl xxIrqButtonHandleButton0PressedEvent; \
   extern EmberEventControl xxIrqButtonHandleButton0ReleasedEvent; \
@@ -37,6 +38,7 @@
   extern void emberAfPluginReportingTickEventHandler(void); \
   extern void emberAfPluginUpdateTcLinkKeyBeginTcLinkKeyUpdateEventHandler(void); \
   extern void xxBlnkLed0EventHandle(void); \
+  extern void xxBlnkLed1EventHandle(void); \
   extern void xxInitEventHandler(void); \
   extern void xxIrqButtonHandleButton0PressedEventHandler(void); \
   extern void xxIrqButtonHandleButton0ReleasedEventHandler(void); \
@@ -86,6 +88,7 @@
   { &emberAfPluginReportingTickEventControl, emberAfPluginReportingTickEventHandler }, \
   { &emberAfPluginUpdateTcLinkKeyBeginTcLinkKeyUpdateEventControl, emberAfPluginUpdateTcLinkKeyBeginTcLinkKeyUpdateEventHandler }, \
   { &xxBlnkLed0Event, xxBlnkLed0EventHandle }, \
+  { &xxBlnkLed1Event, xxBlnkLed1EventHandle }, \
   { &xxInitEvent, xxInitEventHandler }, \
   { &xxIrqButtonHandleButton0PressedEvent, xxIrqButtonHandleButton0PressedEventHandler }, \
   { &xxIrqButtonHandleButton0ReleasedEvent, xxIrqButtonHandleButton0ReleasedEventHandler }, \
@@ -113,6 +116,7 @@
   "Reporting Plugin Tick",  \
   "Update TC Link Key Plugin BeginTcLinkKeyUpdate",  \
   "Xx blnk led0 event",  \
+  "Event data",  \
   "Xx init event",  \
   "Xx irq button handle button0 pressed event",  \
   "Xx irq button handle button0 released event",  \

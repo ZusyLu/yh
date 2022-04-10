@@ -116,7 +116,7 @@
   "Reporting Plugin Tick",  \
   "Update TC Link Key Plugin BeginTcLinkKeyUpdate",  \
   "Xx blnk led0 event",  \
-  "Event data",  \
+  "Xx blnk led1 event",  \
   "Xx init event",  \
   "Xx irq button handle button0 pressed event",  \
   "Xx irq button handle button0 released event",  \
