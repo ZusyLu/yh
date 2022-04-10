@@ -235,7 +235,7 @@ void xxProjectScanNetworkFuction( void )
             case EMBER_JOINING_NETWORK:
                 {
                     xxJoiningCunt++;
-                    if ( xxJoiningCunt >= (XX_PROJECT_SCAN_NETWORK_MAX_NUMBER-1) )
+                    if ( xxJoiningCunt >= (XX_PROJECT_SCAN_NETWORK_MAX_NUMBER/2) )
                     {
                         //reboot
                         halReboot();
@@ -469,6 +469,9 @@ void xxRebootEventHandler( void )
     //reset cunt
     XxDiagnosticsGetResetCunt();
     XxIasZoneResetUpdateTamperPinFunction();
+
+	xxIasMotionSensorPrintln("xx this is door sensor v1.0.1");
+	
 }
 
 //rw :read is 1; write is 2

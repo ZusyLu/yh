@@ -415,6 +415,7 @@ callbacks:emberAfPluginIdleSleepOkToSleepCallback
 callbacks:emberAfPluginIdleSleepWakeUpCallback
 callbacks:emberPollHandler
 callbacks:emberAfPowerConfigClusterServerPreAttributeChangedCallback
+callbacks:emberAfPluginEndDeviceSupportLostParentConnectivityCallback
 }
 {setupId:zclCustomizer
 PATH(GEN_RELATIVE):xxapp/xx_zcl.xml

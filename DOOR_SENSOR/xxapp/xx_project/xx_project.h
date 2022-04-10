@@ -70,7 +70,7 @@ extern "C"
 
 #define XX_PROJECT_POWER_UP_AND_SCAN_NETWORK_BLINK_LED_TIME_MS                     (1000*2)
 
-#define XX_PROJECT_SCAN_NETWORK_MAX_NUMBER                                         10
+#define XX_PROJECT_SCAN_NETWORK_MAX_NUMBER                                         30
 
 //network status change
 #define XX_PROJECT_NETWORK_UP_BLINK_LED_FREQUENCY                                  3

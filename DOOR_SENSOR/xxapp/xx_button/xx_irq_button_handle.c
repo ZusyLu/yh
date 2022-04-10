@@ -245,6 +245,9 @@ void xxIrqButtonHandleButton0HighCallback( void )
 {
     xxIrqButtonHandlePrintln("%s %d %s\n",__FILE__,__LINE__,__func__);
     EmberStatus status;
+	#ifdef XX_BLINK_LED_INIT
+    	XxBlinkLedInit();
+	#endif
     xxBlinkMultiLedBlinkLedOn( XX_PROJECT_POWER_UP_AND_SCAN_NETWORK_BLINK_LED_TIME_MS, XX_BLINK_LED_BSP_LED0 );
     XxIasZoneStatusChangeNotificationClearFunction( XX_IAS_MOTION_SENSOR_ZONE_CHANGE_NOTIFICATION_BIT );
 }
@@ -253,6 +256,9 @@ void xxIrqButtonHandleButton0LowCallback( void )
 {
     EmberStatus status;
     xxIrqButtonHandlePrintln("%s %d %s\n",__FILE__,__LINE__,__func__);
+	#ifdef XX_BLINK_LED_INIT
+		XxBlinkLedInit();
+	#endif
     xxBlinkMultiLedBlinkLedOn( XX_PROJECT_POWER_UP_AND_SCAN_NETWORK_BLINK_LED_TIME_MS, XX_BLINK_LED_BSP_LED0 );
     xxIrqButtonHandlePrintln("will send ias ");
     Xx_project_press_falt = false;
@@ -519,8 +525,6 @@ void xxIrqButtonHandleButton2PressedShortCallback( uint16_t timePressedMs )
     //emberEventControlSetDelayMS( xx_project_scan_network_event, XX_PROJECT_POWER_UP_AND_SCAN_NETWORK_TIME_MS );
 
 }
-
-
 
 void xxIrqButtonHandleButton2PressedEventHandler( void )
 {

@@ -39,6 +39,8 @@ extern "C"
 *                                          CONSTANT DEFINED
 *                                             常量定义
 ***************************************************************************************************/
+#define XX_REJOIN_MIN_TIME											10  //FEN ZHONG 
+#define XX_REJOIN_MAX_TIME											120 
 
 /***************************************************************************************************
 *                                           STRUCT DEFINED
@@ -54,6 +56,7 @@ extern "C"
 *                                          LOCAL VARIABLES
 *                                             局部变量
 ***************************************************************************************************/
+static uint16_t xxRejoinTime = XX_REJOIN_MIN_TIME;
 
 /***************************************************************************************************
 *                                          EXTERN FUNCTIONS
@@ -160,6 +163,7 @@ void XxZbStackStatusCallback(EmberStatus status)
             Xx_project_scan_network_cunt = XX_PROJECT_SCAN_NETWORK_MAX_NUMBER;
             emberAfAddToCurrentAppTasks(EMBER_AF_FORCE_SHORT_POLL);
             emberEventControlSetDelayMS( xx_project_wait_cfg_cmd_event, XX_PROJECT_SHROT_POLL_TIME );
+			xxRejoinTime = XX_REJOIN_MIN_TIME;
         }
         break;
 
@@ -271,6 +275,17 @@ uint8_t XxReportSpecificAttributeEx(uint16_t   u16ClusterID,  uint8_t  u8AttrNum
     return status;
 }
 
+bool emberAfPluginEndDeviceSupportLostParentConnectivityCallback( void )
+{
+	if ( xxRejoinTime > XX_REJOIN_MAX_TIME )
+	{
+		xxRejoinTime = XX_REJOIN_MAX_TIME;
+	}
+	emberEventControlSetDelayMinutes( xx_project_scan_network_event, xxRejoinTime<<1 );
+	xxRejoinTime = xxRejoinTime<<1;
+	
+	return false;
+}
 
 
 /***************************************************************************************************
