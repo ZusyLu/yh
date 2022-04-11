@@ -1,1 +1,3 @@
 不需要bootload
+
+ZigbeeDebugger20220411：修复调试器缺失一个校验位问题；
