@@ -281,7 +281,7 @@ bool emberAfPluginEndDeviceSupportLostParentConnectivityCallback( void )
 	{
 		xxRejoinTime = XX_REJOIN_MAX_TIME;
 	}
-	emberEventControlSetDelayMinutes( xx_project_scan_network_event, xxRejoinTime<<1 );
+	emberEventControlSetDelayMinutes( xx_project_scan_network_event, xxRejoinTime );
 	xxRejoinTime = xxRejoinTime<<1;
 	
 	return false;

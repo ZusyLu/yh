@@ -94,6 +94,12 @@ static uint8_t xx_ias_motion_sensor_time_for_config_cunt = 0;
 *                                            FUNCTIONS
 *                                               函数
 ***************************************************************************************************/
+void xxProjectDisableJTAGPort( void )
+{
+    GPIO->DBGROUTEPEN &= ~(1<<3);
+    GPIO->DBGROUTEPEN &= ~(1<<2);
+}
+
 static void clearNetworkTables(void)
 {
     uint8_t endpointIndex;
@@ -196,9 +202,10 @@ void xxProjectScanNetworkFuction( void )
     EmberNetworkStatus networkStatus;
     networkStatus = emberNetworkState();
     static uint8_t xxJoiningCunt = 0;
+    xxProjectDisableJTAGPort();
     emberEventControlSetInactive( xx_project_scan_network_event );
-    
     xxIasMotionSensorPrintln("xx networkStatus = %x ",networkStatus );
+    
     switch ( networkStatus )
         {
             case EMBER_NO_NETWORK:
@@ -365,6 +372,20 @@ bool emberAfPluginIdleSleepOkToIdleCallback(void)
 	return true;
 }
 
+/** @brief Wake Up
+ *
+ * This function is called by the Idle/Sleep plugin after sleeping.
+ *
+ * @param durationMs The duration in milliseconds that the device slept.
+ * Ver.: always
+ */
+void emberAfPluginIdleSleepWakeUpCallback(uint32_t durationMs)
+{
+    //emberAfCorePrintln("%s %d %s\n",__FILE__,__LINE__,__func__);
+    xxProjectDisableJTAGPort();
+    emberAfCorePrintln(" ");
+}
+
 void XxWriteAttribute(uint8_t endpoint, EmberAfClusterId cluster, EmberAfAttributeId attribute, bool serverAttribute, uint8_t  dataType, uint8_t* data)
 {
     //uint8_t i;
@@ -447,7 +468,8 @@ void xxRebootEventHandler( void )
 {
     EmberNetworkStatus state;
     state = emberAfNetworkState();
-	Xx_key_for_leave_cunt = 0;
+    Xx_key_for_leave_cunt = 0;
+    xxProjectDisableJTAGPort();
     emberEventControlSetInactive( xxRebootEventControl );
     //xxIasMotionSendorWriteMacAddr();
     xxIasMotionSendorWriteAndReadVersion();
@@ -470,7 +492,7 @@ void xxRebootEventHandler( void )
     XxDiagnosticsGetResetCunt();
     XxIasZoneResetUpdateTamperPinFunction();
 
-	xxIasMotionSensorPrintln("xx this is door sensor v1.0.1");
+	xxIasMotionSensorPrintln("xx this is door sensor v1.0.2");
 	
 }
 

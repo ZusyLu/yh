@@ -178,7 +178,7 @@ extern uint8_t Xx_key_for_leave_cunt;
 *                                             全局函数
 ***************************************************************************************************/
 extern void XxMainStart1(void);
-
+extern void xxProjectDisableJTAGPort( void );
 extern void XxLeaveNetworkFuction(void);
 extern void XxIasMotionSensorScanNetworkBlinkLedRefreshFuction( void );
 extern void XxWriteAttribute(uint8_t endpoint, EmberAfClusterId cluster, EmberAfAttributeId attribute, bool serverAttribute, uint8_t  dataType, uint8_t* data);
