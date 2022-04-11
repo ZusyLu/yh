@@ -131,6 +131,7 @@ uint8_t xxIrqButtonPinState( uint8_t button )
 
 void xxIrqButtonIsr(uint8_t button, uint8_t state)
 {
+    xxProjectDisableJTAGPort();
     xxIrqButtonHandleFunction(button, state);
 }
 

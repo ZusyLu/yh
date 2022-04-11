@@ -94,6 +94,11 @@ static uint8_t xx_ias_motion_sensor_time_for_config_cunt = 0;
 *                                            FUNCTIONS
 *                                               函数
 ***************************************************************************************************/
+void xxProjectDisableJTAGPort( void )
+{
+    GPIO->DBGROUTEPEN &= ~(1<<3);
+    GPIO->DBGROUTEPEN &= ~(1<<2);
+}
 static void clearNetworkTables(void)
 {
     uint8_t endpointIndex;
@@ -196,6 +201,7 @@ void xxProjectScanNetworkFuction( void )
     EmberNetworkStatus networkStatus;
     networkStatus = emberNetworkState();
     static uint8_t xxJoiningCunt = 0;
+    xxProjectDisableJTAGPort();
     emberEventControlSetInactive( xx_project_scan_network_event );
     
     xxIasMotionSensorPrintln("xx networkStatus = %x ",networkStatus );
@@ -360,6 +366,20 @@ bool emberAfPluginIdleSleepOkToSleepCallback(uint32_t durationMs)
 	return true;
 }
 
+/** @brief Wake Up
+ *
+ * This function is called by the Idle/Sleep plugin after sleeping.
+ *
+ * @param durationMs The duration in milliseconds that the device slept.
+ * Ver.: always
+ */
+void emberAfPluginIdleSleepWakeUpCallback(uint32_t durationMs)
+{
+    //emberAfCorePrintln("%s %d %s\n",__FILE__,__LINE__,__func__);
+    xxProjectDisableJTAGPort();
+    emberAfCorePrintln(" ");
+}
+
 bool emberAfPluginIdleSleepOkToIdleCallback(void)
 {   
 	return true;
@@ -447,7 +467,8 @@ void xxRebootEventHandler( void )
 {
     EmberNetworkStatus state;
     state = emberAfNetworkState();
-	Xx_key_for_leave_cunt = 0;
+    xxProjectDisableJTAGPort();
+    Xx_key_for_leave_cunt = 0;
     emberEventControlSetInactive( xxRebootEventControl );
     //xxIasMotionSendorWriteMacAddr();
     xxIasMotionSendorWriteAndReadVersion();
@@ -470,7 +491,7 @@ void xxRebootEventHandler( void )
     XxDiagnosticsGetResetCunt();
     XxIasZoneResetUpdateTamperPinFunction();
 
-	xxIasMotionSensorPrintln("xx this is water sensor v1.0.1");
+	xxIasMotionSensorPrintln("xx this is water sensor v1.0.2");
 	
 }
 

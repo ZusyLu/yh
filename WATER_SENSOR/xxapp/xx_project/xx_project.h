@@ -183,7 +183,7 @@ extern void XxLeaveNetworkFuction(void);
 extern void XxIasMotionSensorScanNetworkBlinkLedRefreshFuction( void );
 extern void XxWriteAttribute(uint8_t endpoint, EmberAfClusterId cluster, EmberAfAttributeId attribute, bool serverAttribute, uint8_t  dataType, uint8_t* data);
 extern void XxCommonWriteTriplefunction( void );
-
+extern void xxProjectDisableJTAGPort( void );
 /***************************************************************************************************
 *                                                END
 ***************************************************************************************************/
