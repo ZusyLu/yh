@@ -93,7 +93,7 @@ HEAD	   LEN	      CMD0	CMD1	  DATA	   FCS
 #define GW_ZIGBEE_ACK                                               0xFF
 
 //add by yh
-#define   GW_VERSION                                                0X04
+#define   GW_VERSION                                                0X05
 
 #define    YH_WINDOW_OPEN                                           0X00
 #define    YH_WINDOW_CLOSE                                          0X01
