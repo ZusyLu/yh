@@ -187,10 +187,21 @@ void xxIrqButtonInit( void )
     for ( i = 0; i < XX_IRQ_BUTTON_COUNT; i++ ) 
     {
         /* Configure pin as input */
-        GPIO_PinModeSet(xx_irq_button_rray[i].port,
-                        xx_irq_button_rray[i].pin,
-                        XX_IRQ_BSP_BUTTON_GPIO_MODE,
-                        XX_IRQ_BSP_BUTTON_GPIO_DOUT);
+		if ( xx_irq_button_rray[i].port == gpioPortB )
+		{
+			GPIO_PinModeSet(xx_irq_button_rray[i].port,
+							xx_irq_button_rray[i].pin,
+							HAL_GPIO_MODE_INPUT_PULL,
+							HAL_GPIO_DOUT_HIGH);
+		}
+		else
+		{
+			GPIO_PinModeSet(xx_irq_button_rray[i].port,
+							xx_irq_button_rray[i].pin,
+							XX_IRQ_BSP_BUTTON_GPIO_MODE,
+							XX_IRQ_BSP_BUTTON_GPIO_DOUT);
+		}
+
         /* Register callbacks before setting up and enabling pin interrupt. */
 
         GPIOINT_CallbackRegister(xx_irq_button_rray[enableButtons[i]].button,

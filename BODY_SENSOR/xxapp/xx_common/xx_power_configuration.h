@@ -36,13 +36,16 @@ extern "C"
 *                                          CONSTANT DEFINED
 *                                              常量定义
 ***************************************************************************************************/
+//外部结构
+extern EmberEventControl emberAfPluginBatteryMonitorReadADCEventControl;
 
+#define XX_POWER_CONFIGURATION_READ_AD_TIME					300			
+#define XX_POWER_CONFIGURATION_READ_AD 						emberEventControlSetDelayMS(emberAfPluginBatteryMonitorReadADCEventControl,XX_POWER_CONFIGURATION_READ_AD_TIME)
 /***************************************************************************************************
 *                                           STRUCT DEFINED
 *                                             结构体定义
 ***************************************************************************************************/
-//外部结构
-extern EmberEventControl emberAfPluginBatteryMonitorReadADCEventControl;
+
 
 /***************************************************************************************************
 *                                             FUNCTION

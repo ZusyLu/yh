@@ -145,7 +145,7 @@ static void xxIasMotionSendorWriteAndReadVersion( void )
 {
     //xxIasMotionSensorPrintln("jixian image type = %2x ",EMBER_AF_PLUGIN_OTA_CLIENT_POLICY_IMAGE_TYPE_ID);
     //xxIasMotionSensorPrintln("jixian application version = %4x ",CUSTOMER_APPLICATION_VERSION);
-    emberProcessCommandString((uint8_t*)"write 1 0 0x4000 1 0x42 \"1.0.2\"", strlen("write 1 0 0x4000 1 0x42 \"1.0.2\""));
+    emberProcessCommandString((uint8_t*)"write 1 0 0x4000 1 0x42 \"1.0.4\"", strlen("write 1 0 0x4000 1 0x42 \"1.0.4\""));
     emberProcessCommandString((uint8_t*)"\n", strlen("\n"));
     xxIasMotionSensorPrintln("\r\n xx Ias body Sensor version:");
     emberProcessCommandString((uint8_t*)"read 1 0 0x4000 1", strlen("read 1 0 0x4000 1"));
@@ -263,6 +263,11 @@ void xxProjectScanNetworkFuction( void )
                     //can set time event for next run
                     emberAfAppPrintln("xx will try rejoin");
                     emberAfStartMoveCallback();
+
+					#ifdef XX_PROJECT_NO_PARENT_LED_BLINK
+            			XX_PROJECT_NO_PARENT_LED_BLINK;
+					#endif
+		
                 }
                 break;
 
@@ -338,6 +343,9 @@ void xxIasMotionFilterReportEventHandler( void )
 	emberEventControlSetInactive( xx_ias_motion_filter_report_event );
 	Xx_ias_motion_sensor_press_falt = true;
 	XxIasZoneStatusChangeNotificationClearFunction( XX_IAS_MOTION_SENSOR_ZONE_CHANGE_NOTIFICATION_BIT );
+	#ifdef XX_POWER_CONFIGURATION_READ_AD
+		XX_POWER_CONFIGURATION_READ_AD;
+	#endif
 }
 
 void xxProjectWaitCfgCmdFuction( void )
@@ -366,7 +374,7 @@ void XxLeaveNetworkFuction(void)
     XxIrqButtonHandleClearButtonCountersTimes();
     //emberAfResetAttributes(emberAfCurrentEndpoint());
     clearNetworkTables();
-    emberEventControlSetDelayMS( xx_project_scan_network_event, XX_PROJECT_TIME_S(3) );
+    emberEventControlSetDelayMS( xx_project_scan_network_event, XX_PROJECT_TIME_S(2) );
     emberLeaveNetwork();
 }
 
@@ -500,8 +508,13 @@ void xxRebootEventHandler( void )
     //reset cunt
     XxDiagnosticsGetResetCunt();
     XxIasZoneResetUpdateTamperPinFunction();
-
-	xxIasMotionSensorPrintln("xx this is body sensor v1.0.2");
+	#ifdef XX_POWER_CONFIGURATION_READ_AD
+		XX_POWER_CONFIGURATION_READ_AD;
+	#endif
+	#ifdef XX_NWK_REJOIN_TIME_INIT
+		XX_NWK_REJOIN_TIME_INIT;
+	#endif
+	xxIasMotionSensorPrintln("xx this is body sensor v1.0.4");
 	
 }
 
