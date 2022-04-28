@@ -177,8 +177,9 @@ void xxInitEventHandler( void )
     if ( !halGetBatteryVoltageMilliV() )
     {
         emberEventControlSetDelayMS(xxInitEvent,XX_POWER_ON_READ_ADC_TIME_MS);
+		    emberEventControlSetDelayMS(emberAfPluginBatteryMonitorReadADCEventControl,(XX_POWER_ON_READ_ADC_TIME_MS/2) );
     }
-    emberEventControlSetDelayMS(emberAfPluginBatteryMonitorReadADCEventControl,XX_POWER_ON_READ_ADC_TIME_MS);
+
     //xxIrqButtonInit();
 }
 

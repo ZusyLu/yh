@@ -179,16 +179,17 @@ void XxZbStackStatusCallback(EmberStatus status)
 		    #ifdef XX_SERIAL_SMOKE_NWK_UP
           uint8 value;
           value=3;
-          xxSerialSmokeSend7cFrameToSerial(1, XX_SERIAL_SMOKE_RESERVED_CMD, XX_SERIAL_SMOKE_SCAN_NETWORK_RESPONSE_CMD,&value );
 				 #endif
 			
             if ( state == EMBER_NO_NETWORK )
             {
                  xxNwkPrintln("xx EMBER_NETWORK_DOWN ");
+				 xxSerialSmokeSend7cFrameToSerial(1, XX_SERIAL_SMOKE_RESERVED_CMD, XX_SERIAL_SMOKE_SCAN_NETWORK_RESPONSE_CMD,&value );
                  XxLeaveNetworkFuction();
             }
             else if ( state == EMBER_JOINED_NETWORK_NO_PARENT )
             {
+				xxSerialSmokeSend7cFrameToSerial(1, XX_SERIAL_SMOKE_RESERVED_CMD, XX_SERIAL_SMOKE_SELF_TEST_RESPONSE_CMD,&value );
                 //emberEventControlSetDelayMS( xx_project_wait_cfg_cmd_event, XX_PROJECT_TIME_MS(100) );
                 //emberAfStartMoveCallback();
             }
@@ -283,6 +284,7 @@ uint8_t XxReportSpecificAttributeEx(uint16_t   u16ClusterID,  uint8_t  u8AttrNum
 
 bool emberAfPluginEndDeviceSupportLostParentConnectivityCallback( void )
 {
+	uint8 value=0;
 	if ( xxRejoinTime > XX_REJOIN_MAX_TIME )
 	{
 		xxRejoinTime = XX_REJOIN_MAX_TIME;
@@ -291,7 +293,8 @@ bool emberAfPluginEndDeviceSupportLostParentConnectivityCallback( void )
 	{
 		xxRejoinTime = xxRejoinTime<<1;
 	}
-	
+	value = 3;
+	xxSerialSmokeSend7cFrameToSerial(1, XX_SERIAL_SMOKE_RESERVED_CMD, XX_SERIAL_SMOKE_SELF_TEST_RESPONSE_CMD,&value );
 	emberEventControlSetDelayMinutes( xx_project_scan_network_event, xxRejoinTime );
 	
 	return false;
