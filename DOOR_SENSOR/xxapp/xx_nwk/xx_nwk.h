@@ -41,11 +41,11 @@ extern "C"
 #define XX_NWK_LEAVE_NETWORK_MAX_TIME                               8000
 
 
-#define XX_NWK_KEY_PRESS_NUMBER                                         8
-#define XX_NWK_UNICASE_SEND_METHOD                                       0
-#define XX_NWK_BROADCAST_SEND_METHOD                                     1
-#define XX_NWK_MULTICAST_SEND_METHOD                                     2
-
+#define XX_NWK_KEY_PRESS_NUMBER                                     8
+#define XX_NWK_UNICASE_SEND_METHOD                                  0
+#define XX_NWK_BROADCAST_SEND_METHOD                                1
+#define XX_NWK_MULTICAST_SEND_METHOD                                2
+#define XX_NWK_REJOIN_TIME_INIT 									xxNwkRejoinTimeInit()
 /***************************************************************************************************
 *                                           STRUCT DEFINED
 *                                             结构体定义

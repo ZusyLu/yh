@@ -39,7 +39,7 @@ extern "C"
 *                                          CONSTANT DEFINED
 *                                             常量定义
 ***************************************************************************************************/
-#define XX_REJOIN_MIN_TIME											10  //FEN ZHONG 
+#define XX_REJOIN_MIN_TIME											5  //FEN ZHONG 
 #define XX_REJOIN_MAX_TIME											120 
 
 /***************************************************************************************************
@@ -67,6 +67,11 @@ static uint16_t xxRejoinTime = XX_REJOIN_MIN_TIME;
 *                                            FUNCTIONS
 *                                               函数
 ***************************************************************************************************/
+void xxNwkRejoinTimeInit( void )
+{
+	xxRejoinTime = XX_REJOIN_MIN_TIME;
+}
+
 uint8 XxNwkSendRfPacket(uint8 srcEp, uint8 dstEp, uint16 dstAddr, uint8 frameControl, uint16 clusterID, uint8 command, uint8 *buf, uint8 len)
 {
     
@@ -155,7 +160,14 @@ void XxZbStackStatusCallback(EmberStatus status)
              #ifdef XX_HEART_BEAT_ACTIVE_CALL_BACK
                 XX_HEART_BEAT_ACTIVE_CALL_BACK
              #endif
-             
+			#ifdef XX_POWER_CONFIGURATION_READ_AD
+				XX_POWER_CONFIGURATION_READ_AD;
+			#endif
+
+			#ifdef XX_NWK_REJOIN_TIME_INIT
+				XX_NWK_REJOIN_TIME_INIT;
+			#endif
+	
              emberEventControlSetInactive( xx_project_scan_network_event );
              xxBlinkMultiLedBlinkBlink( XX_PROJECT_NETWORK_UP_BLINK_LED_FREQUENCY,\
                                        XX_PROJECT_NETWORK_UP_BLINK_LED_TIME, \
@@ -275,14 +287,24 @@ uint8_t XxReportSpecificAttributeEx(uint16_t   u16ClusterID,  uint8_t  u8AttrNum
     return status;
 }
 
+
 bool emberAfPluginEndDeviceSupportLostParentConnectivityCallback( void )
 {
+	#ifdef XX_PROJECT_NO_PARENT_LED_BLINK
+    	XX_PROJECT_NO_PARENT_LED_BLINK;
+	#endif
+	
 	if ( xxRejoinTime > XX_REJOIN_MAX_TIME )
 	{
 		xxRejoinTime = XX_REJOIN_MAX_TIME;
 	}
+	else
+    {
+		xxRejoinTime = xxRejoinTime<<1;
+	}
+	
 	emberEventControlSetDelayMinutes( xx_project_scan_network_event, xxRejoinTime );
-	xxRejoinTime = xxRejoinTime<<1;
+	
 	
 	return false;
 }

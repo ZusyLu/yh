@@ -65,7 +65,7 @@ extern "C"
 #define XX_PROJECT_MAX_RANDOM_NUMBER                                                        8000
 #define XX_PROJECT_SCAN_NETWORK_INTERVAL_TIME_MS                                            (1000*8)
 
-#define XX_PROJECT_POWER_UP_AND_SCAN_NETWORK_BLINK_LED                                      0XFF
+#define XX_PROJECT_POWER_UP_AND_SCAN_NETWORK_BLINK_LED                                      0X08
 #define XX_PROJECT_CLOSE_SCAN_NETWORK_BLINK_LED                                             1
 
 #define XX_PROJECT_POWER_UP_AND_SCAN_NETWORK_BLINK_LED_TIME_MS                     (1000*2)
@@ -131,6 +131,15 @@ extern "C"
 #define XX_PROJECT_WRITE_MODE                                                      2
 #define XX_PROJECT_READ_WRITE_ERROR                                                0xff
 
+//led blink
+//no parent led blink
+#define XX_PROJECT_NO_PARENT_LED_BLINK_CUNT                                         3
+#define XX_PROJECT_NO_PARENT_LED_BLINK_TIME                                         100
+#define XX_PROJECT_NO_PARENT_REJOIN_NWK_TIME                                        500
+#define XX_PROJECT_NO_PARENT_REJOIN_NWK                                             emberEventControlSetDelayMS( xx_project_scan_network_event, XX_PROJECT_NO_PARENT_REJOIN_NWK_TIME )
+#define XX_PROJECT_NO_PARENT_LED_BLINK                                              xxBlinkMultiLedBlinkBlink( XX_PROJECT_NO_PARENT_LED_BLINK_CUNT,\
+                                                                                                               XX_PROJECT_NO_PARENT_LED_BLINK_TIME,\
+                                                                                                               XX_BLINK_LED_BSP_LED0 )
 
 
 /***************************************************************************************************
