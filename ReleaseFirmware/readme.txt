@@ -12,3 +12,10 @@ SMOKE_SENSOR_V_1_0_2
 1，更新数据。
 
 SMOKE_SENSOR_V_1_0_3 :优化代码。
+
+20220428更新：
+BODY_SENSOR_V1_0_5（人体会频繁感应到人，没有父节点的情况下，感应到人时（不过滤）将会执行rejoin动作）
+DOOR_SENSOR_V_1_0_5
+WATER_SENSOR_V_1_0_5
+SMOKE_SENSOR_V_1_0_4
+以上固件，全部加上了上电时防止ADC读取的值为零，如ADC值为零的话，会继续采集，直到不为零为止。
