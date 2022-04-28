@@ -245,7 +245,18 @@ void xxIrqButtonHandleButton0HighCallback( void )
 {
     xxIrqButtonHandlePrintln("%s %d %s\n",__FILE__,__LINE__,__func__);
     EmberStatus status;
-    xxBlinkMultiLedBlinkLedOn( XX_PROJECT_POWER_UP_AND_SCAN_NETWORK_BLINK_LED_TIME_MS, XX_BLINK_LED_BSP_LED1 );
+
+	if ( emberAfNetworkState() == EMBER_JOINED_NETWORK_NO_PARENT )
+    {
+        #ifdef XX_PROJECT_NO_PARENT_LED_BLINK
+            XX_PROJECT_NO_PARENT_LED_BLINK;
+        #endif
+    }
+	else
+    {
+		xxBlinkMultiLedBlinkLedOn( XX_PROJECT_POWER_UP_AND_SCAN_NETWORK_BLINK_LED_TIME_MS, XX_BLINK_LED_BSP_LED0 );
+	}
+	
     XxIasZoneStatusChangeNotificationClearFunction( XX_IAS_MOTION_SENSOR_ZONE_CHANGE_NOTIFICATION_BIT );
 }
 
@@ -253,7 +264,18 @@ void xxIrqButtonHandleButton0LowCallback( void )
 {
     EmberStatus status;
     xxIrqButtonHandlePrintln("%s %d %s\n",__FILE__,__LINE__,__func__);
-    xxBlinkMultiLedBlinkLedOn( XX_PROJECT_POWER_UP_AND_SCAN_NETWORK_BLINK_LED_TIME_MS, XX_BLINK_LED_BSP_LED1 );
+
+	if ( emberAfNetworkState() == EMBER_JOINED_NETWORK_NO_PARENT )
+    {
+		#ifdef XX_PROJECT_NO_PARENT_LED_BLINK
+            XX_PROJECT_NO_PARENT_LED_BLINK;
+		#endif
+    }
+	else
+    {
+		xxBlinkMultiLedBlinkLedOn( XX_PROJECT_POWER_UP_AND_SCAN_NETWORK_BLINK_LED_TIME_MS, XX_BLINK_LED_BSP_LED0 );
+	}
+
     xxIrqButtonHandlePrintln("will send ias ");
     Xx_project_press_falt = false;
     XxIasZoneStatusChangeNotificationTriggerFunction( XX_IAS_MOTION_SENSOR_ZONE_CHANGE_NOTIFICATION_BIT );
@@ -272,6 +294,10 @@ void xxIrqButtonHandleButton0PressedLongCallback( uint16_t timePressedMs, bool p
 void xxIrqButtonHandleButton0PressedShortCallback( uint16_t timePressedMs )
 {
     xxIrqButtonHandlePrintln("%s %d %s\n",__FILE__,__LINE__,__func__);
+	
+	#ifdef XX_NWK_REJOIN_TIME_INIT
+		XX_NWK_REJOIN_TIME_INIT;
+	#endif
 }
 
 
@@ -388,6 +414,10 @@ void xxIrqButtonHandleButton1PressedShortCallback( uint16_t timePressedMs )
     xxIrqButtonHandlePrintln("%s %d %s\n",__FILE__,__LINE__,__func__);
     EmberNetworkStatus state;
 	
+	#ifdef XX_NWK_REJOIN_TIME_INIT
+		XX_NWK_REJOIN_TIME_INIT;
+	#endif
+	
 	Xx_key_for_leave_cunt++;// cunt key press leave
 	emberEventControlSetInactive(xx_project_button_interval_time_event);
 	if ( Xx_key_for_leave_cunt != 2 )
@@ -400,7 +430,7 @@ void xxIrqButtonHandleButton1PressedShortCallback( uint16_t timePressedMs )
 	}
 
     state = emberAfNetworkState();
-    if ( state == EMBER_NO_NETWORK )
+    if ( state == EMBER_NO_NETWORK || state == EMBER_JOINING_NETWORK)
     {
         Xx_project_scan_network_cunt = 0;
         //xxBlinkMultiLedBlinkLedOn( XX_PROJECT_POWER_UP_AND_SCAN_NETWORK_BLINK_LED_TIME_MS, XX_BLINK_LED_BSP_LED1 );
@@ -414,6 +444,9 @@ void xxIrqButtonHandleButton1PressedShortCallback( uint16_t timePressedMs )
     else if ( state == EMBER_JOINED_NETWORK_NO_PARENT )
     {   
         xxIrqButtonHandlePrintln(" xx will rejoin ");
+		#ifdef XX_PROJECT_NO_PARENT_LED_BLINK
+    		XX_PROJECT_NO_PARENT_LED_BLINK;
+		#endif
         emberAfStartMoveCallback();
     }
 }
@@ -495,11 +528,13 @@ void xxIrqButtonHandleButton1ReleasedEventHandler( void )
 void xxIrqButtonHandleButton2HighCallback( void )
 {
     XxIasZoneStatusChangeNotificationTriggerFunction( XX_IAS_MOTION_SENSOR_ZONE_TAMPER_BIT );
+	xxBlinkMultiLedBlinkLedOn( XX_PROJECT_POWER_UP_AND_SCAN_NETWORK_BLINK_LED_TIME_MS, XX_BLINK_LED_BSP_LED0 );
 }
 
 void xxIrqButtonHandleButton2LowCallback( void )
 {
     XxIasZoneStatusChangeNotificationClearFunction( XX_IAS_MOTION_SENSOR_ZONE_TAMPER_BIT );
+	xxBlinkMultiLedBlinkLedOn( XX_PROJECT_POWER_UP_AND_SCAN_NETWORK_BLINK_LED_TIME_MS, XX_BLINK_LED_BSP_LED0 );
 }
 
 void xxIrqButtonHandleButton2PressingCallback( void )
@@ -516,6 +551,10 @@ void xxIrqButtonHandleButton2PressedLongCallback( uint16_t timePressedMs, bool p
 void xxIrqButtonHandleButton2PressedShortCallback( uint16_t timePressedMs )
 {
     xxIrqButtonHandlePrintln("%s %d %s\n",__FILE__,__LINE__,__func__);
+
+	#ifdef XX_NWK_REJOIN_TIME_INIT
+		XX_NWK_REJOIN_TIME_INIT;
+	#endif
     //Xx_project_scan_network_cunt = 0;
     //emberEventControlSetDelayMS( xx_project_scan_network_event, XX_PROJECT_POWER_UP_AND_SCAN_NETWORK_TIME_MS );
 
