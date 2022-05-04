@@ -19,3 +19,13 @@ DOOR_SENSOR_V_1_0_5
 WATER_SENSOR_V_1_0_5
 SMOKE_SENSOR_V_1_0_4
 以上固件，全部加上了上电时防止ADC读取的值为零，如ADC值为零的话，会继续采集，直到不为零为止。
+
+20220429更新：
+BODY_SENSOR_V1_0_6（人体会频繁感应到人，没有父节点的情况下，感应到人时（不过滤）将会执行rejoin动作   现在改为过滤了）
+DOOR_SENSOR_V_1_0_6
+WATER_SENSOR_V_1_0_6
+SMOKE_SENSOR_V_1_0_5
+以上固件，全部加上了上2300mv为低压阈值。
+
+20220504更新
+SMOKE_SENSOR_V_1_0_6   新加烟感触发时读取电量并上报电量。
