@@ -125,9 +125,9 @@
   <libraryFile toolchainCompatibility="com.silabs.ss.tool.ide.arm.toolchain.iar:8.30.1.114" uri="studio:/sdk/platform/radio/rail_lib/autogen/librail_release/librail_efr32xg22_iar_release.a"/>
   <libraryFile toolchainCompatibility="com.silabs.ss.tool.ide.arm.toolchain.iar:8.30.1.114" uri="studio:/sdk/protocol/zigbee/build/multi-network-stub-library-cortexm3-iar-efr32mg22-rail/multi-network-stub-library.a"/>
   <libraryFile toolchainCompatibility="com.silabs.ss.tool.ide.arm.toolchain.iar:8.30.1.114" uri="studio:/sdk/protocol/zigbee/build/packet-validate-library-cortexm3-iar-efr32mg22-rail/packet-validate-library.a"/>
+  <libraryFile toolchainCompatibility="com.silabs.ss.tool.ide.arm.toolchain.iar:8.30.1.114" uri="studio:/sdk/protocol/zigbee/build/zigbee-pro-leaf-stack-cortexm3-iar-efr32mg22-rail/zigbee-pro-leaf-stack.a"/>
   <libraryFile toolchainCompatibility="com.silabs.ss.tool.ide.arm.toolchain.iar:8.30.1.114" uri="studio:/sdk/platform/emdrv/nvm3/lib/libnvm3_CM33_iar.a"/>
   <libraryFile toolchainCompatibility="com.silabs.ss.tool.ide.arm.toolchain.iar:8.30.1.114" uri="studio:/sdk/protocol/zigbee/build/gp-stub-library-cortexm3-iar-efr32mg22-rail/gp-stub-library.a"/>
-  <libraryFile toolchainCompatibility="com.silabs.ss.tool.ide.arm.toolchain.iar:8.30.1.114" uri="studio:/sdk/protocol/zigbee/build/zigbee-pro-stack-cortexm3-iar-efr32mg22-rail/zigbee-pro-stack.a"/>
   <libraryFile toolchainCompatibility="com.silabs.ss.tool.ide.arm.toolchain.iar:8.30.1.114" uri="studio:/sdk/protocol/zigbee/build/cbke-library-dsa-sign-stub-cortexm3-iar-efr32mg22-rail/cbke-library-dsa-sign-stub.a"/>
   <libraryFile toolchainCompatibility="com.silabs.ss.tool.ide.arm.toolchain.iar:8.30.1.114" uri="studio:/sdk/protocol/zigbee/build/sim-eeprom2-to-nvm3-upgrade-stub-library-cortexm3-iar-efr32mg22-rail/sim-eeprom2-to-nvm3-upgrade-stub-library.a"/>
   <libraryFile toolchainCompatibility="com.silabs.ss.tool.ide.arm.toolchain.iar:8.30.1.114" uri="studio:/sdk/protocol/zigbee/build/cbke-library-dsa-verify-stub-cortexm3-iar-efr32mg22-rail/cbke-library-dsa-verify-stub.a"/>

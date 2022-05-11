@@ -303,18 +303,6 @@ void emberAfPluginIdleSleepActiveCallback(void)
 
 //}
 
-/** @brief Wake Up
- *
- * This function is called by the Idle/Sleep plugin after sleeping.
- *
- * @param durationMs The duration in milliseconds that the device slept.
- * Ver.: always
- */
-void emberAfPluginIdleSleepWakeUpCallback(uint32_t durationMs)
-{
-    //emberAfCorePrintln("%s %d %s\n",__FILE__,__LINE__,__func__);
-    emberAfCorePrintln(" ");
-}
 
 #ifndef EZSP_HOST
 

@@ -145,7 +145,7 @@ static void xxIasMotionSendorWriteAndReadVersion( void )
 {
     //xxIasMotionSensorPrintln("jixian image type = %2x ",EMBER_AF_PLUGIN_OTA_CLIENT_POLICY_IMAGE_TYPE_ID);
     //xxIasMotionSensorPrintln("jixian application version = %4x ",CUSTOMER_APPLICATION_VERSION);
-    emberProcessCommandString((uint8_t*)"write 1 0 0x4000 1 0x42 \"1.0.4\"", strlen("write 1 0 0x4000 1 0x42 \"1.0.4\""));
+    emberProcessCommandString((uint8_t*)"write 1 0 0x4000 1 0x42 \"1.0.9\"", strlen("write 1 0 0x4000 1 0x42 \"1.0.9\""));
     emberProcessCommandString((uint8_t*)"\n", strlen("\n"));
     xxIasMotionSensorPrintln("\r\n xx Ias body Sensor version:");
     emberProcessCommandString((uint8_t*)"read 1 0 0x4000 1", strlen("read 1 0 0x4000 1"));
@@ -174,8 +174,9 @@ void xxInitEventHandler( void )
     if ( !halGetBatteryVoltageMilliV() )
     {
         emberEventControlSetDelayMS(xxInitEvent,XX_POWER_ON_READ_ADC_TIME_MS);
+		emberEventControlSetDelayMS(emberAfPluginBatteryMonitorReadADCEventControl,(XX_POWER_ON_READ_ADC_TIME_MS/2) );
     }
-    emberEventControlSetDelayMS(emberAfPluginBatteryMonitorReadADCEventControl,XX_POWER_ON_READ_ADC_TIME_MS);
+
     //xxIrqButtonInit();
 }
 
@@ -342,10 +343,30 @@ void xxIasMotionFilterReportEventHandler( void )
 {
 	emberEventControlSetInactive( xx_ias_motion_filter_report_event );
 	Xx_ias_motion_sensor_press_falt = true;
-	XxIasZoneStatusChangeNotificationClearFunction( XX_IAS_MOTION_SENSOR_ZONE_CHANGE_NOTIFICATION_BIT );
-	#ifdef XX_POWER_CONFIGURATION_READ_AD
-		XX_POWER_CONFIGURATION_READ_AD;
+
+    EmberNetworkStatus status;
+    status = emberAfNetworkState();
+	if ( status == EMBER_JOINED_NETWORK_NO_PARENT )
+    {
+	#ifdef XX_PROJECT_NO_PARENT_LED_BLINK
+            XX_PROJECT_NO_PARENT_LED_BLINK;
 	#endif
+		emberAfStartMoveCallback();
+    }
+	else if ( status == EMBER_JOINED_NETWORK )
+    {
+		xxBlinkMultiLedBlinkLedOn( XX_PROJECT_POWER_UP_AND_SCAN_NETWORK_BLINK_LED_TIME_MS, XX_BLINK_LED_BSP_LED0 );
+	    XxIasZoneStatusChangeNotificationClearFunction( XX_IAS_MOTION_SENSOR_ZONE_CHANGE_NOTIFICATION_BIT );
+		
+		#ifdef XX_POWER_CONFIGURATION_READ_AD
+		XX_POWER_CONFIGURATION_READ_AD;
+		#endif
+	}
+	else 
+	{
+		xxBlinkMultiLedBlinkLedOn( XX_PROJECT_POWER_UP_AND_SCAN_NETWORK_BLINK_LED_TIME_MS, XX_BLINK_LED_BSP_LED0 );
+	}
+
 }
 
 void xxProjectWaitCfgCmdFuction( void )
@@ -514,7 +535,7 @@ void xxRebootEventHandler( void )
 	#ifdef XX_NWK_REJOIN_TIME_INIT
 		XX_NWK_REJOIN_TIME_INIT;
 	#endif
-	xxIasMotionSensorPrintln("xx this is body sensor v1.0.4");
+	xxIasMotionSensorPrintln("xx this is body sensor v1.0.9");
 	
 }
 

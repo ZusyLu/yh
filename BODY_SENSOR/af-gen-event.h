@@ -31,6 +31,7 @@
   extern EmberEventControl xx_project_scan_network_event; \
   extern EmberEventControl xx_project_wait_cfg_cmd_event; \
   extern EmberEventControl xxRebootEventControl; \
+  extern EmberEventControl xx_rejoin_control_event; \
   extern void emberAfPluginBatteryMonitorReadADCEventHandler(void); \
   extern void emberAfPluginIasZoneServerManageQueueEventHandler(void); \
   extern void emberAfPluginManufacturingLibraryCliCheckSendCompleteEventHandler(void); \
@@ -52,6 +53,7 @@
   extern void xxProjectScanNetworkFuction(void); \
   extern void xxProjectWaitCfgCmdFuction(void); \
   extern void xxRebootEventHandler(void); \
+  extern void xxRejoinControlEventHandler(void); \
   static void networkEventWrapper(EmberEventControl *control, EmberAfNetworkEventHandler handler, uint8_t networkIndex) \
   { \
     emberAfPushNetworkIndex(networkIndex); \
@@ -102,6 +104,7 @@
   { &xx_project_scan_network_event, xxProjectScanNetworkFuction }, \
   { &xx_project_wait_cfg_cmd_event, xxProjectWaitCfgCmdFuction }, \
   { &xxRebootEventControl, xxRebootEventHandler }, \
+  { &xx_rejoin_control_event, xxRejoinControlEventHandler }, \
   { &emberAfPluginEndDeviceSupportMoveNetworkEventControls[0], emberAfPluginEndDeviceSupportMoveNetworkEventWrapper0 }, \
   { &emberAfPluginEndDeviceSupportPollingNetworkEventControls[0], emberAfPluginEndDeviceSupportPollingNetworkEventWrapper0 }, \
   { &emberAfPluginScanDispatchScanNetworkEventControls[0], emberAfPluginScanDispatchScanNetworkEventWrapper0 }, \
@@ -116,7 +119,7 @@
   "Reporting Plugin Tick",  \
   "Update TC Link Key Plugin BeginTcLinkKeyUpdate",  \
   "Xx blnk led0 event",  \
-  "Event data",  \
+  "Xx_ias_motion_filter_report_event",  \
   "Xx init event",  \
   "Xx irq button handle button0 pressed event",  \
   "Xx irq button handle button0 released event",  \
@@ -130,6 +133,7 @@
   "Xx_project_scan_network_event",  \
   "Xx_project_wait_cfg_cmd_event",  \
   "Xx reboot event control",  \
+  "Xx_rejoin_control_event",  \
   "End Device Support Plugin Move NWK 0", \
   "End Device Support Plugin Polling NWK 0", \
   "Scan Dispatch Plugin Scan NWK 0", \

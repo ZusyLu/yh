@@ -117,7 +117,7 @@ extern "C"
 
 #define XX_PROJECT_ZCL_ATTRIBUTE_DATA_LEN                                          70
 
-#define XX_PROJECT_LOW_POWERMV                                                     2000
+#define XX_PROJECT_LOW_POWERMV                                                     2300
 
 #define XX_PROJECT_GW_NODE_ID                                                      0X0000
 

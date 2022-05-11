@@ -1,0 +1,13 @@
+mbedtls/EFR32_2_2/sx_memcmp.o: D:\v5\developer\sdks\gecko_sdk_suite\v3.2\util\third_party\crypto\sl_component\sl_cryptoacc_library\src\sx_memcmp.c
+mbedtls/EFR32_2_2/sx_memcmp.o: D:\v5\developer\sdks\gecko_sdk_suite\v3.2\util\third_party\crypto\sl_component\sl_cryptoacc_library\include\sx_memcmp.h
+mbedtls/EFR32_2_2/sx_memcmp.o: D:\iar\arm\inc\c\stdint.h
+mbedtls/EFR32_2_2/sx_memcmp.o: D:\iar\arm\inc\c\ycheck.h
+mbedtls/EFR32_2_2/sx_memcmp.o: D:\iar\arm\inc\c\yvals.h
+mbedtls/EFR32_2_2/sx_memcmp.o: D:\iar\arm\inc\c\DLib_Defaults.h
+mbedtls/EFR32_2_2/sx_memcmp.o: D:\iar\arm\inc\c\DLib_Config_Normal.h
+mbedtls/EFR32_2_2/sx_memcmp.o: D:\iar\arm\inc\c\DLib_Product.h
+mbedtls/EFR32_2_2/sx_memcmp.o: D:\v5\developer\sdks\gecko_sdk_suite\v3.2\util\third_party\crypto\sl_component\sl_cryptoacc_library\include\cryptolib_types.h
+mbedtls/EFR32_2_2/sx_memcmp.o: D:\v5\developer\sdks\gecko_sdk_suite\v3.2\util\third_party\crypto\sl_component\sl_cryptoacc_library\include\sx_memcpy.h
+mbedtls/EFR32_2_2/sx_memcmp.o: D:\iar\arm\inc\c\stdlib.h
+mbedtls/EFR32_2_2/sx_memcmp.o: D:\iar\arm\inc\c\ysizet.h
+mbedtls/EFR32_2_2/sx_memcmp.o: D:\iar\arm\inc\c\DLib_Product_stdlib.h
