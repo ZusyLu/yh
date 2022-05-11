@@ -1306,7 +1306,7 @@
 <file><name>$PROJ_DIR$/../../developer/sdks/gecko_sdk_suite/v3.2/protocol\zigbee\build\security-library-link-keys-stub-cortexm3-iar-efr32mg22-rail\security-library-link-keys-stub.a</name></file>
 <file><name>$PROJ_DIR$/../../developer/sdks/gecko_sdk_suite/v3.2/protocol\zigbee\build\sim-eeprom2-to-nvm3-upgrade-stub-library-cortexm3-iar-efr32mg22-rail\sim-eeprom2-to-nvm3-upgrade-stub-library.a</name></file>
 <file><name>$PROJ_DIR$/../../developer/sdks/gecko_sdk_suite/v3.2/protocol\zigbee\build\source-route-stub-library-cortexm3-iar-efr32mg22-rail\source-route-stub-library.a</name></file>
-<file><name>$PROJ_DIR$/../../developer/sdks/gecko_sdk_suite/v3.2/protocol\zigbee\build\zigbee-pro-stack-cortexm3-iar-efr32mg22-rail\zigbee-pro-stack.a</name></file>
+<file><name>$PROJ_DIR$/../../developer/sdks/gecko_sdk_suite/v3.2/protocol\zigbee\build\zigbee-pro-leaf-stack-cortexm3-iar-efr32mg22-rail\zigbee-pro-leaf-stack.a</name></file>
 <file><name>$PROJ_DIR$/../../developer/sdks/gecko_sdk_suite/v3.2/protocol\zigbee\build\zigbee-r22-support-stub-library-cortexm3-iar-efr32mg22-rail\zigbee-r22-support-stub-library.a</name></file>
 <file><name>$PROJ_DIR$/../../developer/sdks/gecko_sdk_suite/v3.2/protocol\zigbee\build\zll-stub-library-cortexm3-iar-efr32mg22-rail\zll-stub-library.a</name></file>
 

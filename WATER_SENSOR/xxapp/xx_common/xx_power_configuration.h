@@ -39,7 +39,7 @@ extern "C"
 //外部结构
 extern EmberEventControl emberAfPluginBatteryMonitorReadADCEventControl;
 
-#define XX_POWER_CONFIGURATION_READ_AD_TIME					300			
+#define XX_POWER_CONFIGURATION_READ_AD_TIME					2000
 #define XX_POWER_CONFIGURATION_READ_AD 						emberEventControlSetDelayMS(emberAfPluginBatteryMonitorReadADCEventControl,XX_POWER_CONFIGURATION_READ_AD_TIME)
 /***************************************************************************************************
 *                                           STRUCT DEFINED

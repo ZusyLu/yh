@@ -133,7 +133,7 @@ void xxIrqButtonIsr(uint8_t button, uint8_t state)
 {
     xxProjectDisableJTAGPort();
 	#ifdef XX_POWER_CONFIGURATION_READ_AD
-		XX_POWER_CONFIGURATION_READ_AD;
+		//XX_POWER_CONFIGURATION_READ_AD;
 	#endif
     xxIrqButtonHandleFunction(button, state);
 }

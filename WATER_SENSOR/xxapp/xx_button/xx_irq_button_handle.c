@@ -244,41 +244,63 @@ void xxIrqButtonHandleButtonTimeOutHandler( void )
 void xxIrqButtonHandleButton0HighCallback( void )
 {
     xxIrqButtonHandlePrintln("%s %d %s\n",__FILE__,__LINE__,__func__);
-    EmberStatus status;
-
-	if ( emberAfNetworkState() == EMBER_JOINED_NETWORK_NO_PARENT )
+    EmberNetworkStatus status;
+    status = emberAfNetworkState();
+	if ( status == EMBER_JOINED_NETWORK_NO_PARENT )
+  {
+	    xxIrqButtonHandlePrintln("no parent ");
+		  #ifdef XX_PROJECT_NO_PARENT_LED_BLINK
+        XX_PROJECT_NO_PARENT_LED_BLINK;
+		  #endif
+		 emberAfStartMoveCallback();
+  }
+	else if ( status == EMBER_JOINED_NETWORK )
     {
-        #ifdef XX_PROJECT_NO_PARENT_LED_BLINK
-            XX_PROJECT_NO_PARENT_LED_BLINK;
-        #endif
-    }
-	else
-    {
+	    xxIrqButtonHandlePrintln("will send ias ");
+	    xxBlinkMultiLedBlinkLedOn( XX_PROJECT_POWER_UP_AND_SCAN_NETWORK_BLINK_LED_TIME_MS, XX_BLINK_LED_BSP_LED0 );
+	    XxIasZoneStatusChangeNotificationClearFunction( XX_IAS_MOTION_SENSOR_ZONE_CHANGE_NOTIFICATION_BIT );
+		
+		#ifdef XX_POWER_CONFIGURATION_READ_AD
+		XX_POWER_CONFIGURATION_READ_AD;
+		#endif
+	}
+	else 
+	{
+	  xxIrqButtonHandlePrintln("no network ");
 		xxBlinkMultiLedBlinkLedOn( XX_PROJECT_POWER_UP_AND_SCAN_NETWORK_BLINK_LED_TIME_MS, XX_BLINK_LED_BSP_LED0 );
 	}
-	
-    XxIasZoneStatusChangeNotificationClearFunction( XX_IAS_MOTION_SENSOR_ZONE_CHANGE_NOTIFICATION_BIT );
+   
 }
 
 void xxIrqButtonHandleButton0LowCallback( void )
 {
-    EmberStatus status;
     xxIrqButtonHandlePrintln("%s %d %s\n",__FILE__,__LINE__,__func__);
-
-	if ( emberAfNetworkState() == EMBER_JOINED_NETWORK_NO_PARENT )
+    EmberNetworkStatus status;
+    status = emberAfNetworkState();
+	if ( status == EMBER_JOINED_NETWORK_NO_PARENT )
     {
-		#ifdef XX_PROJECT_NO_PARENT_LED_BLINK
-            XX_PROJECT_NO_PARENT_LED_BLINK;
-		#endif
+      xxIrqButtonHandlePrintln("no parent ");
+		  #ifdef XX_PROJECT_NO_PARENT_LED_BLINK
+        XX_PROJECT_NO_PARENT_LED_BLINK;
+		  #endif
+		  emberAfStartMoveCallback();
     }
-	else
+	else if ( status == EMBER_JOINED_NETWORK )
     {
+      xxIrqButtonHandlePrintln("will send ias ");
+	    xxBlinkMultiLedBlinkLedOn( XX_PROJECT_POWER_UP_AND_SCAN_NETWORK_BLINK_LED_TIME_MS, XX_BLINK_LED_BSP_LED0 );
+	    XxIasZoneStatusChangeNotificationTriggerFunction( XX_IAS_MOTION_SENSOR_ZONE_CHANGE_NOTIFICATION_BIT );
+		
+		#ifdef XX_POWER_CONFIGURATION_READ_AD
+		XX_POWER_CONFIGURATION_READ_AD;
+		#endif
+	}
+	else 
+	{
+	  xxIrqButtonHandlePrintln("no network ");
 		xxBlinkMultiLedBlinkLedOn( XX_PROJECT_POWER_UP_AND_SCAN_NETWORK_BLINK_LED_TIME_MS, XX_BLINK_LED_BSP_LED0 );
 	}
 
-    xxIrqButtonHandlePrintln("will send ias ");
-    Xx_project_press_falt = false;
-    XxIasZoneStatusChangeNotificationTriggerFunction( XX_IAS_MOTION_SENSOR_ZONE_CHANGE_NOTIFICATION_BIT );
 }
 
 void xxIrqButtonHandleButton0PressingCallback( void )
@@ -527,13 +549,25 @@ void xxIrqButtonHandleButton1ReleasedEventHandler( void )
 #ifdef XX_IRQ_BSP_BUTTON2
 void xxIrqButtonHandleButton2HighCallback( void )
 {
-    XxIasZoneStatusChangeNotificationTriggerFunction( XX_IAS_MOTION_SENSOR_ZONE_TAMPER_BIT );
+	EmberNetworkStatus status;
+    status = emberAfNetworkState();
+	if ( status == EMBER_JOINED_NETWORK )
+	{
+		XxIasZoneStatusChangeNotificationTriggerFunction( XX_IAS_MOTION_SENSOR_ZONE_TAMPER_BIT );
+	}
+	
 	xxBlinkMultiLedBlinkLedOn( XX_PROJECT_POWER_UP_AND_SCAN_NETWORK_BLINK_LED_TIME_MS, XX_BLINK_LED_BSP_LED0 );
 }
 
 void xxIrqButtonHandleButton2LowCallback( void )
 {
-    XxIasZoneStatusChangeNotificationClearFunction( XX_IAS_MOTION_SENSOR_ZONE_TAMPER_BIT );
+	EmberNetworkStatus status;
+    status = emberAfNetworkState();
+	if ( status == EMBER_JOINED_NETWORK )
+	{
+		XxIasZoneStatusChangeNotificationClearFunction( XX_IAS_MOTION_SENSOR_ZONE_TAMPER_BIT );
+	}
+	
 	xxBlinkMultiLedBlinkLedOn( XX_PROJECT_POWER_UP_AND_SCAN_NETWORK_BLINK_LED_TIME_MS, XX_BLINK_LED_BSP_LED0 );
 }
 

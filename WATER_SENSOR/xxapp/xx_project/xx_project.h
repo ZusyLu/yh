@@ -117,7 +117,7 @@ extern "C"
 
 #define XX_PROJECT_ZCL_ATTRIBUTE_DATA_LEN                                          70
 
-#define XX_PROJECT_LOW_POWERMV                                                     2000
+#define XX_PROJECT_LOW_POWERMV                                                     2400
 
 #define XX_PROJECT_GW_NODE_ID                                                      0X0000
 
@@ -131,6 +131,15 @@ extern "C"
 #define XX_PROJECT_WRITE_MODE                                                      2
 #define XX_PROJECT_READ_WRITE_ERROR                                                0xff
 
+//led blink
+//no parent led blink
+#define XX_PROJECT_NO_PARENT_LED_BLINK_CUNT                                         3
+#define XX_PROJECT_NO_PARENT_LED_BLINK_TIME                                         100
+#define XX_PROJECT_NO_PARENT_REJOIN_NWK_TIME                                        500
+#define XX_PROJECT_NO_PARENT_REJOIN_NWK                                             emberEventControlSetDelayMS( xx_project_scan_network_event, XX_PROJECT_NO_PARENT_REJOIN_NWK_TIME )
+#define XX_PROJECT_NO_PARENT_LED_BLINK                                              xxBlinkMultiLedBlinkBlink( XX_PROJECT_NO_PARENT_LED_BLINK_CUNT,\
+                                                                                                               XX_PROJECT_NO_PARENT_LED_BLINK_TIME,\
+                                                                                                               XX_BLINK_LED_BSP_LED0 )
 
 
 /***************************************************************************************************
