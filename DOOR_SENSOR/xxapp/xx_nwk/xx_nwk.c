@@ -41,6 +41,7 @@ extern "C"
 ***************************************************************************************************/
 #define XX_REJOIN_MIN_TIME											5  //FEN ZHONG 
 #define XX_REJOIN_MAX_TIME											120 
+#define XX_NWK_REJOIN_CLOSE	
 
 /***************************************************************************************************
 *                                           STRUCT DEFINED
@@ -57,6 +58,7 @@ extern "C"
 *                                             局部变量
 ***************************************************************************************************/
 static uint16_t xxRejoinTime = XX_REJOIN_MIN_TIME;
+EmberEventControl xx_rejoin_control_event;
 
 /***************************************************************************************************
 *                                          EXTERN FUNCTIONS
@@ -164,6 +166,10 @@ void XxZbStackStatusCallback(EmberStatus status)
 				XX_POWER_CONFIGURATION_READ_AD;
 			#endif
 
+			#ifdef XX_NWK_REJOIN_CLOSE
+			emberEventControlSetInactive( xx_rejoin_control_event );
+			#endif
+			
 			#ifdef XX_NWK_REJOIN_TIME_INIT
 				XX_NWK_REJOIN_TIME_INIT;
 			#endif
@@ -288,23 +294,28 @@ uint8_t XxReportSpecificAttributeEx(uint16_t   u16ClusterID,  uint8_t  u8AttrNum
 }
 
 
+void xxRejoinControlEventHandler( void )
+{
+	emberEventControlSetInactive( xx_rejoin_control_event );
+	EmberNetworkStatus status;
+    status = emberAfNetworkState();
+	if ( status == EMBER_JOINED_NETWORK_NO_PARENT )
+	{
+		#ifdef XX_PROJECT_NO_PARENT_LED_BLINK
+        XX_PROJECT_NO_PARENT_LED_BLINK;
+        #endif
+		emberAfStartMoveCallback();
+	}
+}
+
 bool emberAfPluginEndDeviceSupportLostParentConnectivityCallback( void )
 {
 	#ifdef XX_PROJECT_NO_PARENT_LED_BLINK
     	XX_PROJECT_NO_PARENT_LED_BLINK;
 	#endif
 	
-	if ( xxRejoinTime > XX_REJOIN_MAX_TIME )
-	{
-		xxRejoinTime = XX_REJOIN_MAX_TIME;
-	}
-	else
-    {
-		xxRejoinTime = xxRejoinTime<<1;
-	}
-	
-	emberEventControlSetDelayMinutes( xx_project_scan_network_event, xxRejoinTime );
-	
+	xxRejoinTime = XX_REJOIN_MAX_TIME;
+	emberEventControlSetDelayMinutes( xx_rejoin_control_event, xxRejoinTime );
 	
 	return false;
 }

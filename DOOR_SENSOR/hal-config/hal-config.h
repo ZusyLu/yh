@@ -36,12 +36,12 @@
 #define BSP_CLK_HFXO_PRESENT                  (1)
 #define BSP_CLK_HFXO_FREQ                     (38400000UL)
 #define BSP_CLK_HFXO_INIT                      CMU_HFXOINIT_DEFAULT
-#define BSP_CLK_HFXO_CTUNE                    (-1)
+#define BSP_CLK_HFXO_CTUNE                    (120)
 #define BSP_CLK_LFXO_PRESENT                  (0)
 #define BSP_CLK_LFXO_INIT                      CMU_LFXOINIT_DEFAULT
 #define BSP_CLK_LFXO_FREQ                     (32768U)
-#define BSP_CLK_LFXO_CTUNE                    (0U)
-#define HAL_CLK_LFXO_PRECISION                (500UL)
+#define BSP_CLK_LFXO_CTUNE                    (37U)
+#define HAL_CLK_LFXO_PRECISION                (100UL)
 #define HAL_CLK_LFRCO_PRECISION               (0)
 // [CMU]$
 
@@ -104,7 +104,7 @@
 #define HAL_PA_POWER                          (252U)
 #define HAL_PA_RAMP                           (10UL)
 #define BSP_PA_VOLTAGE                        (3300U)
-#define HAL_PA_SELECTION                      (HAL_PA_SELECTION_2P4_MP)
+#define HAL_PA_SELECTION                      (HAL_PA_SELECTION_2P4_HP)
 // [PA]$
 
 // $[PORTIO]

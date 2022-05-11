@@ -11,7 +11,7 @@
 #include "xxapp/xx_main.h"
 
 
-/** @brief Stack Status help ota right now  xx ota operate     Xx_whether_ota  No such command  EEPROM init Next poll
+/** @brief Stack Status help ota right now  xx ota operate     Xx_whether_ota  No such command  EEPROM init Next poll  txpSetTransmitPower
 
  *
  * This function is called by the application framework from the stack status
@@ -303,18 +303,7 @@ void emberAfPluginIdleSleepActiveCallback(void)
 
 //}
 
-/** @brief Wake Up
- *
- * This function is called by the Idle/Sleep plugin after sleeping.
- *
- * @param durationMs The duration in milliseconds that the device slept.
- * Ver.: always
- */
-void emberAfPluginIdleSleepWakeUpCallback(uint32_t durationMs)
-{
-    //emberAfCorePrintln("%s %d %s\n",__FILE__,__LINE__,__func__);
-    emberAfCorePrintln(" ");
-}
+
 
 #ifndef EZSP_HOST
 

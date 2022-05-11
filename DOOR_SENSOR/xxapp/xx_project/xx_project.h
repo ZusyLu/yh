@@ -40,7 +40,7 @@ extern "C"
 #define XX_MAIN_START_1
 #define XX_MAIN_START_10
 #define XX_SLEEPY_END_DEVICE                                               
-#define XX_NO_SLEEPY                                                                        return false;
+//#define XX_NO_SLEEPY                                                                        return false;
 //flash
 // flash read or write
 #define ERASE_PAGE_SIZE(N)                                                                  (N*8*1024)//page per 8kb
@@ -117,7 +117,7 @@ extern "C"
 
 #define XX_PROJECT_ZCL_ATTRIBUTE_DATA_LEN                                          70
 
-#define XX_PROJECT_LOW_POWERMV                                                     2000
+#define XX_PROJECT_LOW_POWERMV                                                     2300
 
 #define XX_PROJECT_GW_NODE_ID                                                      0X0000
 

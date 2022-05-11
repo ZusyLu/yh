@@ -46,6 +46,7 @@ extern "C"
 #define XX_NWK_BROADCAST_SEND_METHOD                                1
 #define XX_NWK_MULTICAST_SEND_METHOD                                2
 #define XX_NWK_REJOIN_TIME_INIT 									xxNwkRejoinTimeInit()
+										
 /***************************************************************************************************
 *                                           STRUCT DEFINED
 *                                             结构体定义
@@ -72,6 +73,7 @@ extern uint8_t Xx_nwk_key_cunt;
 extern uint8_t Xx_nwk_net_leave_flat;
 extern uint32_t Xx_nwk_leave_start_time;
 extern EmberApsFrame globalApsFrame;
+extern EmberEventControl xx_rejoin_control_event;
 /***************************************************************************************************
 *                                                END
 ***************************************************************************************************/

@@ -144,7 +144,7 @@ static void xxIasMotionSendorWriteAndReadVersion( void )
 {
     //xxIasMotionSensorPrintln("jixian image type = %2x ",EMBER_AF_PLUGIN_OTA_CLIENT_POLICY_IMAGE_TYPE_ID);
     //xxIasMotionSensorPrintln("jixian application version = %4x ",CUSTOMER_APPLICATION_VERSION);
-    emberProcessCommandString((uint8_t*)"write 1 0 0x4000 1 0x42 \"1.0.4\"", strlen("write 1 0 0x4000 1 0x42 \"1.0.4\""));
+    emberProcessCommandString((uint8_t*)"write 1 0 0x4000 1 0x42 \"1.0.9\"", strlen("write 1 0 0x4000 1 0x42 \"1.0.9\""));
     emberProcessCommandString((uint8_t*)"\n", strlen("\n"));
     xxIasMotionSensorPrintln("\r\n xx Ias door Sensor version:");
     emberProcessCommandString((uint8_t*)"read 1 0 0x4000 1", strlen("read 1 0 0x4000 1"));
@@ -173,8 +173,9 @@ void xxInitEventHandler( void )
     if ( !halGetBatteryVoltageMilliV() )
     {
         emberEventControlSetDelayMS(xxInitEvent,XX_POWER_ON_READ_ADC_TIME_MS);
+		emberEventControlSetDelayMS(emberAfPluginBatteryMonitorReadADCEventControl,(XX_POWER_ON_READ_ADC_TIME_MS/2) );
     }
-    emberEventControlSetDelayMS(emberAfPluginBatteryMonitorReadADCEventControl,XX_POWER_ON_READ_ADC_TIME_MS);
+
     //xxIrqButtonInit();
 }
 
@@ -504,7 +505,7 @@ void xxRebootEventHandler( void )
 		XX_NWK_REJOIN_TIME_INIT;
 	#endif
 	
-	xxIasMotionSensorPrintln("xx this is door sensor v1.0.4");
+	xxIasMotionSensorPrintln("xx this is door sensor v1.0.9");
 	
 }
 

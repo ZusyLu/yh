@@ -185,7 +185,7 @@
         <debug>1</debug>
         <option>
           <name>CCDefines</name>
-          <state>NULL_BTL</state>
+          <state>APP_BTL</state>
           <state>CORTEXM3</state>
           <state>CORTEXM3_EFR32</state>
           <state>CORTEXM3_EFR32_MICRO</state>
@@ -392,6 +392,7 @@
           <state>$PROJ_DIR$\..\..\developer\sdks\gecko_sdk_suite\v3.2\hardware\kit\common\halconfig</state>
           <state>$PROJ_DIR$\..\..\developer\sdks\gecko_sdk_suite\v3.2\hardware\kit\common\bsp</state>
           <state>$PROJ_DIR$\..\..\developer\sdks\gecko_sdk_suite\v3.2\platform\base\hal\micro\cortexm3\efm32\config\segger</state>
+          <state>$PROJ_DIR$\..\..\developer\sdks\gecko_sdk_suite\v3.2\platform\bootloader</state>
           <state>$PROJ_DIR$\..\..\developer\sdks\gecko_sdk_suite\v3.2\platform\emdrv\nvm3\inc</state>
           <state>$PROJ_DIR$\..\..\developer\sdks\gecko_sdk_suite\v3.2\platform\radio\rail_lib\chip\efr32\efr32xg2x</state>
           <state>$PROJ_DIR$\..\..\developer\sdks\gecko_sdk_suite\v3.2\platform\radio\rail_lib\common</state>
@@ -592,7 +593,7 @@
         </option>
         <option>
           <name>ADefines</name>
-          <state>NULL_BTL</state>
+          <state>APP_BTL</state>
           <state>CORTEXM3</state>
           <state>CORTEXM3_EFM32_MICRO</state>
           <state>CORTEXM3_EFR32_MICRO</state>
@@ -760,6 +761,7 @@
           <state>$PROJ_DIR$\..\..\developer\sdks\gecko_sdk_suite\v3.2\hardware\kit\common\halconfig</state>
           <state>$PROJ_DIR$\..\..\developer\sdks\gecko_sdk_suite\v3.2\hardware\kit\common\bsp</state>
           <state>$PROJ_DIR$\..\..\developer\sdks\gecko_sdk_suite\v3.2\platform\base\hal\micro\cortexm3\efm32\config\segger</state>
+          <state>$PROJ_DIR$\..\..\developer\sdks\gecko_sdk_suite\v3.2\platform\bootloader</state>
           <state>$PROJ_DIR$\..\..\developer\sdks\gecko_sdk_suite\v3.2\platform\emdrv\nvm3\inc</state>
           <state>$PROJ_DIR$\..\..\developer\sdks\gecko_sdk_suite\v3.2\platform\radio\rail_lib\chip\efr32\efr32xg2x</state>
           <state>$PROJ_DIR$\..\..\developer\sdks\gecko_sdk_suite\v3.2\platform\radio\rail_lib\common</state>
@@ -924,7 +926,7 @@
           <state>LOCKBITS_IN_MAINFLASH_SIZE=8192</state>
           <state>HEADER_SIZE=512</state>
           <state>BTL_SIZE=24576</state>
-          <state>NULL_BTL=1</state>
+          <state>APP_BTL=1</state>
           <state>EMBER_MALLOC_HEAP_SIZE=0</state>
 
         </option>
@@ -1306,7 +1308,7 @@
 <file><name>$PROJ_DIR$/../../developer/sdks/gecko_sdk_suite/v3.2/protocol\zigbee\build\security-library-link-keys-stub-cortexm3-iar-efr32mg22-rail\security-library-link-keys-stub.a</name></file>
 <file><name>$PROJ_DIR$/../../developer/sdks/gecko_sdk_suite/v3.2/protocol\zigbee\build\sim-eeprom2-to-nvm3-upgrade-stub-library-cortexm3-iar-efr32mg22-rail\sim-eeprom2-to-nvm3-upgrade-stub-library.a</name></file>
 <file><name>$PROJ_DIR$/../../developer/sdks/gecko_sdk_suite/v3.2/protocol\zigbee\build\source-route-stub-library-cortexm3-iar-efr32mg22-rail\source-route-stub-library.a</name></file>
-<file><name>$PROJ_DIR$/../../developer/sdks/gecko_sdk_suite/v3.2/protocol\zigbee\build\zigbee-pro-stack-cortexm3-iar-efr32mg22-rail\zigbee-pro-stack.a</name></file>
+<file><name>$PROJ_DIR$/../../developer/sdks/gecko_sdk_suite/v3.2/protocol\zigbee\build\zigbee-pro-leaf-stack-cortexm3-iar-efr32mg22-rail\zigbee-pro-leaf-stack.a</name></file>
 <file><name>$PROJ_DIR$/../../developer/sdks/gecko_sdk_suite/v3.2/protocol\zigbee\build\zigbee-r22-support-stub-library-cortexm3-iar-efr32mg22-rail\zigbee-r22-support-stub-library.a</name></file>
 <file><name>$PROJ_DIR$/../../developer/sdks/gecko_sdk_suite/v3.2/protocol\zigbee\build\zll-stub-library-cortexm3-iar-efr32mg22-rail\zll-stub-library.a</name></file>
 
@@ -1315,7 +1317,11 @@
   </group>
   <file><name>$PROJ_DIR$/DOOR_SENSOR_callbacks.c</name></file>
 
-  <file><name>$PROJ_DIR$/../../developer/sdks/gecko_sdk_suite/v3.2/platform\base\hal\plugin\serial\cortexm\efm32\com.c</name></file>
+  <file><name>$PROJ_DIR$/../../developer/sdks/gecko_sdk_suite/v3.2/platform\base\hal\micro\cortexm3\efm32\bootloader-interface-app.c</name></file>
+<file><name>$PROJ_DIR$/../../developer/sdks/gecko_sdk_suite/v3.2/platform\base\hal\micro\cortexm3\efm32\bootloader-interface.c</name></file>
+<file><name>$PROJ_DIR$/../../developer/sdks/gecko_sdk_suite/v3.2/platform\base\hal\plugin\serial\cortexm\efm32\com.c</name></file>
+<file><name>$PROJ_DIR$/../../developer/sdks/gecko_sdk_suite/v3.2/platform\bootloader\api\btl_interface.c</name></file>
+<file><name>$PROJ_DIR$/../../developer/sdks/gecko_sdk_suite/v3.2/platform\bootloader\api\btl_interface_storage.c</name></file>
 <file><name>$PROJ_DIR$/../../developer/sdks/gecko_sdk_suite/v3.2/platform\emdrv\uartdrv\src\uartdrv.c</name></file>
 
 
@@ -1332,9 +1338,6 @@
 <file><name>$PROJ_DIR$/../../developer/sdks/gecko_sdk_suite/v3.2/util\third_party\segger\systemview\SEGGER\SEGGER_RTT.c</name></file>
 <file><name>$PROJ_DIR$/../../developer/sdks/gecko_sdk_suite/v3.2/platform\base\hal\plugin\debug-jtag-stub\debug-jtag-stub.c</name></file>
 <file><name>$PROJ_DIR$/../../developer/sdks/gecko_sdk_suite/v3.2/protocol\zigbee\app\framework\plugin\diagnostic-server\diagnostic-server-soc.c</name></file>
-<file><name>$PROJ_DIR$/../../developer/sdks/gecko_sdk_suite/v3.2/util\plugin\plugin-common\eeprom\eeprom.c</name></file>
-<file><name>$PROJ_DIR$/../../developer/sdks/gecko_sdk_suite/v3.2/util\plugin\plugin-afv2\eeprom\eeprom-afv2.c</name></file>
-<file><name>$PROJ_DIR$/../../developer/sdks/gecko_sdk_suite/v3.2/util\plugin\plugin-common\eeprom\eeprom-cli.c</name></file>
 <file><name>$PROJ_DIR$/../../developer/sdks/gecko_sdk_suite/v3.2/platform\base\hal\plugin\serial\ember-printf.c</name></file>
 <file><name>$PROJ_DIR$/../../developer/sdks/gecko_sdk_suite/v3.2/protocol\zigbee\app\framework\plugin\end-device-support\end-device-support.c</name></file>
 <file><name>$PROJ_DIR$/../../developer/sdks/gecko_sdk_suite/v3.2/protocol\zigbee\app\framework\plugin\end-device-support\end-device-move.c</name></file>

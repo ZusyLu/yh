@@ -9,13 +9,11 @@
 
 // Code used to configure the cluster event mechanism
 #define EMBER_AF_GENERATED_EVENT_CODE \
-  EmberEventControl emberAfOtaBootloadClusterClientTickCallbackControl1; \
   EmberEventControl emberAfIasZoneClusterServerTickCallbackControl1; \
   extern EmberEventControl emberAfPluginBatteryMonitorReadADCEventControl; \
   extern EmberEventControl emberAfPluginIasZoneServerManageQueueEventControl; \
   extern EmberEventControl emberAfPluginManufacturingLibraryCliCheckSendCompleteEventControl; \
   extern EmberEventControl emberAfPluginNetworkSteeringFinishSteeringEventControl; \
-  extern EmberEventControl emberAfPluginOtaStorageSimpleEepromPageEraseEventControl; \
   extern EmberEventControl emberAfPluginReportingTickEventControl; \
   extern EmberEventControl emberAfPluginUpdateTcLinkKeyBeginTcLinkKeyUpdateEventControl; \
   extern EmberEventControl xxBlnkLed0Event; \
@@ -32,11 +30,11 @@
   extern EmberEventControl xx_project_scan_network_event; \
   extern EmberEventControl xx_project_wait_cfg_cmd_event; \
   extern EmberEventControl xxRebootEventControl; \
+  extern EmberEventControl xx_rejoin_control_event; \
   extern void emberAfPluginBatteryMonitorReadADCEventHandler(void); \
   extern void emberAfPluginIasZoneServerManageQueueEventHandler(void); \
   extern void emberAfPluginManufacturingLibraryCliCheckSendCompleteEventHandler(void); \
   extern void emberAfPluginNetworkSteeringFinishSteeringEventHandler(void); \
-  extern void emberAfPluginOtaStorageSimpleEepromPageEraseEventHandler(void); \
   extern void emberAfPluginReportingTickEventHandler(void); \
   extern void emberAfPluginUpdateTcLinkKeyBeginTcLinkKeyUpdateEventHandler(void); \
   extern void xxBlnkLed0EventHandle(void); \
@@ -53,6 +51,7 @@
   extern void xxProjectScanNetworkFuction(void); \
   extern void xxProjectWaitCfgCmdFuction(void); \
   extern void xxRebootEventHandler(void); \
+  extern void xxRejoinControlEventHandler(void); \
   static void networkEventWrapper(EmberEventControl *control, EmberAfNetworkEventHandler handler, uint8_t networkIndex) \
   { \
     emberAfPushNetworkIndex(networkIndex); \
@@ -76,19 +75,16 @@
     (*callback)(endpoint); \
     emberAfPopNetworkIndex(); \
   } \
-  void emberAfOtaBootloadClusterClientTickCallbackWrapperFunction1(void) { clusterTickWrapper(&emberAfOtaBootloadClusterClientTickCallbackControl1, emberAfOtaBootloadClusterClientTickCallback, 1); } \
   void emberAfIasZoneClusterServerTickCallbackWrapperFunction1(void) { clusterTickWrapper(&emberAfIasZoneClusterServerTickCallbackControl1, emberAfIasZoneClusterServerTickCallback, 1); } \
 
 
 // EmberEventData structs used to populate the EmberEventData table
 #define EMBER_AF_GENERATED_EVENTS   \
-  { &emberAfOtaBootloadClusterClientTickCallbackControl1, emberAfOtaBootloadClusterClientTickCallbackWrapperFunction1 }, \
   { &emberAfIasZoneClusterServerTickCallbackControl1, emberAfIasZoneClusterServerTickCallbackWrapperFunction1 }, \
   { &emberAfPluginBatteryMonitorReadADCEventControl, emberAfPluginBatteryMonitorReadADCEventHandler }, \
   { &emberAfPluginIasZoneServerManageQueueEventControl, emberAfPluginIasZoneServerManageQueueEventHandler }, \
   { &emberAfPluginManufacturingLibraryCliCheckSendCompleteEventControl, emberAfPluginManufacturingLibraryCliCheckSendCompleteEventHandler }, \
   { &emberAfPluginNetworkSteeringFinishSteeringEventControl, emberAfPluginNetworkSteeringFinishSteeringEventHandler }, \
-  { &emberAfPluginOtaStorageSimpleEepromPageEraseEventControl, emberAfPluginOtaStorageSimpleEepromPageEraseEventHandler }, \
   { &emberAfPluginReportingTickEventControl, emberAfPluginReportingTickEventHandler }, \
   { &emberAfPluginUpdateTcLinkKeyBeginTcLinkKeyUpdateEventControl, emberAfPluginUpdateTcLinkKeyBeginTcLinkKeyUpdateEventHandler }, \
   { &xxBlnkLed0Event, xxBlnkLed0EventHandle }, \
@@ -105,19 +101,18 @@
   { &xx_project_scan_network_event, xxProjectScanNetworkFuction }, \
   { &xx_project_wait_cfg_cmd_event, xxProjectWaitCfgCmdFuction }, \
   { &xxRebootEventControl, xxRebootEventHandler }, \
+  { &xx_rejoin_control_event, xxRejoinControlEventHandler }, \
   { &emberAfPluginEndDeviceSupportMoveNetworkEventControls[0], emberAfPluginEndDeviceSupportMoveNetworkEventWrapper0 }, \
   { &emberAfPluginEndDeviceSupportPollingNetworkEventControls[0], emberAfPluginEndDeviceSupportPollingNetworkEventWrapper0 }, \
   { &emberAfPluginScanDispatchScanNetworkEventControls[0], emberAfPluginScanDispatchScanNetworkEventWrapper0 }, \
 
 
 #define EMBER_AF_GENERATED_EVENT_STRINGS   \
-  "Over the Air Bootloading Cluster Client EP 1",  \
   "IAS Zone Cluster Server EP 1",  \
   "Battery Monitor Plugin ReadADC",  \
   "IAS Zone Server Plugin ManageQueue",  \
   "Manufacturing Library CLI Plugin CheckSendComplete",  \
   "Network Steering Plugin FinishSteering",  \
-  "OTA Simple Storage EEPROM Driver Plugin PageErase",  \
   "Reporting Plugin Tick",  \
   "Update TC Link Key Plugin BeginTcLinkKeyUpdate",  \
   "Xx blnk led0 event",  \
@@ -134,17 +129,17 @@
   "Xx_project_scan_network_event",  \
   "Xx_project_wait_cfg_cmd_event",  \
   "Xx reboot event control",  \
+  "Event data",  \
   "End Device Support Plugin Move NWK 0", \
   "End Device Support Plugin Polling NWK 0", \
   "Scan Dispatch Plugin Scan NWK 0", \
 
 
 // The length of the event context table used to track and retrieve cluster events
-#define EMBER_AF_EVENT_CONTEXT_LENGTH 2
+#define EMBER_AF_EVENT_CONTEXT_LENGTH 1
 
 // EmberAfEventContext structs used to populate the EmberAfEventContext table
-#define EMBER_AF_GENERATED_EVENT_CONTEXT { 0x1, 0x19, true, EMBER_AF_LONG_POLL, EMBER_AF_OK_TO_SLEEP, &emberAfOtaBootloadClusterClientTickCallbackControl1}, \
-{ 0x1, 0x500, false, EMBER_AF_LONG_POLL, EMBER_AF_OK_TO_SLEEP, &emberAfIasZoneClusterServerTickCallbackControl1}
+#define EMBER_AF_GENERATED_EVENT_CONTEXT { 0x1, 0x500, false, EMBER_AF_LONG_POLL, EMBER_AF_OK_TO_SLEEP, &emberAfIasZoneClusterServerTickCallbackControl1}
 
 
 #endif // __AF_GEN_EVENT__
